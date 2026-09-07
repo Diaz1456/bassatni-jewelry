@@ -1,0 +1,60 @@
+<div class="page-header">
+  <div class="container">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li aria-current="page">Size Guide</li>
+      </ol>
+    </nav>
+    <h1 class="page-title">Jewelry Size Guide</h1>
+    <p class="page-subtitle">Finding the perfect fit, thoughtfully</p>
+  </div>
+</div>
+
+<section class="size-guide-page" aria-label="Size guide">
+  <div class="container">
+    <div class="sizing-tip">
+      <strong>How to measure your ring size:</strong> Wrap a strip of paper snugly around the base of your finger, mark where it overlaps, then measure the length in millimetres against a ruler. Compare that measurement with the <em>inner circumference</em> column below. For the most accurate result, measure at the end of the day when fingers are at their largest.
+    </div>
+
+    <div class="size-guide-grid">
+      <div>
+        <h2 class="section-title" style="font-size: 1.35rem;">Ring Size Chart</h2>
+        <table class="ring-size-table">
+          <thead>
+            <tr>
+              <th>US / Canada</th>
+              <th>UK / AU</th>
+              <th>Circumference (mm)</th>
+              <th>Diameter (mm)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% ringSizes.forEach(size => { %>
+              <tr>
+                <td><%= size.us %></td>
+                <td><%= size.uk %></td>
+                <td><%= size.circumference %></td>
+                <td><%= size.diameter %></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+
+      <div>
+        <h2 class="section-title" style="font-size: 1.35rem;">Measuring Tips</h2>
+        <div class="sizing-tip">
+          <strong>Do's:</strong> Measure your finger at room temperature, on the finger you'll wear the ring, and with the ring passing comfortably over the knuckle. A well-fitting ring spins freely but needs a gentle tug to come off.
+        </div>
+        <div class="sizing-tip">
+          <strong>Don'ts:</strong> Don't measure early in the morning or after exercise, when fingers are smaller. Don't use a sewing tape alone — the paper-strip method is far more accurate. And don't estimate from an existing ring without checking its inner diameter against the chart.
+        </div>
+        <div class="sizing-tip">
+          <strong>Bracelets &amp; necklaces:</strong> Bracelets generally measure by wrist circumference plus 1&ndash;1.5 cm of ease. Necklaces: a 16&nbsp;in choker sits at the collarbone, 18&nbsp;in falls to the collarbone, 20&nbsp;in reaches the décolletage, and 24&nbsp;in hangs to the sternum.
+        </div>
+        <p class="section-subtitle" style="margin-top: 1rem;">Still unsure? <a href="/contact" class="section-link" style="color: var(--color-gold);">Contact our concierge</a> — we'll help you find the perfect size.</p>
+      </div>
+    </div>
+  </div>
+</section>

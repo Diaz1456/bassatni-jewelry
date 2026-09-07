@@ -1,0 +1,45 @@
+<div class="page-header">
+  <div class="container">
+    <h1 class="page-title">All Categories</h1>
+    <p class="page-subtitle">Explore our complete collection of fine jewelry</p>
+  </div>
+</div>
+
+<div class="categories-page">
+  <div class="container">
+    <div class="categories-tree" role="list">
+      <% categories.forEach(category => { %>
+        <article class="category-tree-item" role="listitem">
+          <a href="/category/<%= category.slug %>" class="category-tree-link">
+            <% if (category.image?.url) { %>
+              <div class="category-tree-image">
+                <img src="<%= category.image.url %>" alt="" loading="lazy" width="400" height="400">
+              </div>
+            <% } else { %>
+              <div class="category-tree-image category-placeholder">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+              </div>
+            <% } %>
+            <div class="category-tree-info">
+              <h2 class="category-tree-name"><%= category.name %></h2>
+              <% if (category.shortDescription) { %>
+                <p class="category-tree-desc"><%= category.shortDescription %></p>
+              <% } %>
+              <% if (category.subcategories && category.subcategories.length > 0) { %>
+                <ul class="subcategory-list" role="list">
+                  <% category.subcategories.slice(0, 5).forEach(sub => { %>
+                    <li><a href="/category/<%= sub.slug %>"><%= sub.name %></a></li>
+                  <% }) %>
+                  <% if (category.subcategories.length > 5) { %>
+                    <li><a href="/category/<%= category.slug %>">+ <%= category.subcategories.length - 5 %> more</a></li>
+                  <% } %>
+                </ul>
+              <% } %>
+              <span class="category-tree-cta">Explore Collection →</span>
+            </div>
+          </a>
+        </article>
+      <% }) %>
+    </div>
+  </div>
+</div>

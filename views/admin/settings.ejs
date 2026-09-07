@@ -1,0 +1,154 @@
+<div class="admin-panel">
+  <h2 class="admin-panel-title">Site Settings</h2>
+  <p class="admin-muted">These values drive the public site — shop name, logo, favicon, hero, announcement bar, SEO defaults, and contact/footer info.</p>
+
+  <form method="post" action="/admin/settings" enctype="multipart/form-data" class="admin-form" novalidate data-validate="settings">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+    <h3 class="admin-form-section">Brand</h3>
+    <div class="admin-grid">
+      <div class="admin-field">
+        <label for="shopName">Shop name <span class="req">*</span></label>
+        <input id="shopName" name="shopName" type="text" value="<%= settings.shopName || '' %>" required maxlength="100">
+        <% if (errors && errors.shopName) { %><span class="admin-error"><%= errors.shopName %></span><% } %>
+      </div>
+      <div class="admin-field">
+        <label for="tagline">Tagline</label>
+        <input id="tagline" name="tagline" type="text" value="<%= settings.tagline || '' %>">
+      </div>
+      <div class="admin-field">
+        <label for="logo">Logo (JPEG, PNG, WebP, SVG)</label>
+        <input id="logo" name="logo" type="file" accept="image/*" data-admin-image-upload="logoPreview" data-admin-image-note="logoNote">
+        <div class="admin-preview-box">
+          <% if (settings.logo.url) { %>
+            <p class="admin-note">Current logo:</p>
+            <img class="admin-logo-preview" id="logoPreview" src="<%= settings.logo.url %>" alt="Current logo">
+          <% } else { %>
+            <img class="admin-logo-preview is-hidden" id="logoPreview" alt="Logo preview">
+          <% } %>
+        </div>
+        <p class="admin-note" id="logoNote">Leave empty to keep the current logo.</p>
+      </div>
+      <div class="admin-field">
+        <label for="favicon">Favicon (32×32 or 64×64 PNG / ICO / SVG)</label>
+        <input id="favicon" name="favicon" type="file" accept="image/*" data-admin-image-upload="faviconPreview" data-admin-image-note="faviconNote">
+        <div class="admin-preview-box">
+          <p class="admin-note">Current favicon:
+            <a href="<%= settings.favicon.url || '/images/favicon.svg' %>" target="_blank" rel="noopener"><%= settings.favicon.url ? 'uploaded' : 'default' %></a>
+          </p>
+          <% if (settings.favicon.url) { %>
+            <div class="admin-favicon-preview"><img id="faviconPreview" src="<%= settings.favicon.url %>" alt="Current favicon"></div>
+          <% } else { %>
+            <div class="admin-favicon-preview"><img id="faviconPreview" src="/images/favicon.svg" alt="Current favicon"></div>
+          <% } %>
+        </div>
+        <p class="admin-note" id="faviconNote">Leave empty to keep the current favicon.</p>
+      </div>
+    </div>
+
+    <h3 class="admin-form-section">Announcement Bar</h3>
+    <div class="admin-grid">
+      <div class="admin-field admin-field--wide">
+        <label class="admin-check">
+          <input type="checkbox" name="announcementEnabled" id="announcementEnabled" <%= settings.announcementBar && settings.announcementBar.enabled ? 'checked' : '' %>>
+          Show announcement bar
+        </label>
+      </div>
+      <div class="admin-field admin-field--wide">
+        <label for="announcementText">Announcement text</label>
+        <input id="announcementText" name="announcementText" type="text" value="<%= settings.announcementBar && settings.announcementBar.text || '' %>" maxlength="200" placeholder="Free shipping on orders over $500 | Easy 30-day returns">
+      </div>
+    </div>
+
+    <h3 class="admin-form-section">Hero Section</h3>
+    <div class="admin-grid">
+      <div class="admin-field">
+        <label for="heroTitle">Hero title</label>
+        <input id="heroTitle" name="heroTitle" type="text" value="<%= settings.hero.title || '' %>">
+      </div>
+      <div class="admin-field">
+        <label for="heroSubtitle">Hero subtitle</label>
+        <input id="heroSubtitle" name="heroSubtitle" type="text" value="<%= settings.hero.subtitle || '' %>">
+      </div>
+      <div class="admin-field">
+        <label for="heroImage">Hero image (1920×1080 recommended)</label>
+        <input id="heroImage" name="heroImage" type="file" accept="image/*" data-admin-image-upload="heroPreview" data-admin-image-note="heroNote">
+        <div class="admin-preview-box">
+          <% if (settings.hero.image) { %>
+            <p class="admin-note">Current hero:</p>
+            <img class="admin-hero-preview" id="heroPreview" src="<%= settings.hero.image %>" alt="Current hero">
+          <% } else { %>
+            <img class="admin-hero-preview is-hidden" id="heroPreview" alt="Hero preview">
+          <% } %>
+        </div>
+        <p class="admin-note" id="heroNote">Leave empty to keep the current hero image.</p>
+      </div>
+    </div>
+
+    <h3 class="admin-form-section">Contact &amp; Social</h3>
+    <div class="admin-grid">
+      <div class="admin-field"><label for="phone">Phone</label><input id="phone" name="phone" type="text" value="<%= settings.contact.phone || '' %>"></div>
+      <div class="admin-field"><label for="email">Email</label><input id="email" name="email" type="email" value="<%= settings.contact.email || '' %>">
+        <% if (errors && errors.email) { %><span class="admin-error"><%= errors.email %></span><% } %>
+      </div>
+      <div class="admin-field admin-field--wide"><label for="address">Address</label><input id="address" name="address" type="text" value="<%= settings.contact.address || '' %>"></div>
+      <div class="admin-field"><label for="hours">Store hours</label><input id="hours" name="hours" type="text" value="<%= settings.contact.hours || '' %>" placeholder="Mon–Sat: 10am–7pm"></div>
+      <div class="admin-field"><label for="instagram">Instagram URL</label><input id="instagram" name="instagram" type="url" value="<%= settings.contact.instagram || '' %>" placeholder="https://instagram.com/…">
+        <% if (errors && errors.instagram) { %><span class="admin-error"><%= errors.instagram %></span><% } %>
+      </div>
+      <div class="admin-field"><label for="facebook">Facebook URL</label><input id="facebook" name="facebook" type="url" value="<%= settings.contact.facebook || '' %>" placeholder="https://facebook.com/…">
+        <% if (errors && errors.facebook) { %><span class="admin-error"><%= errors.facebook %></span><% } %>
+      </div>
+      <div class="admin-field"><label for="twitter">Twitter / X URL</label><input id="twitter" name="twitter" type="url" value="<%= settings.contact.twitter || '' %>" placeholder="https://x.com/…">
+        <% if (errors && errors.twitter) { %><span class="admin-error"><%= errors.twitter %></span><% } %>
+      </div>
+      <div class="admin-field"><label for="youtube">YouTube URL</label><input id="youtube" name="youtube" type="url" value="<%= settings.contact.youtube || '' %>" placeholder="https://youtube.com/…">
+        <% if (errors && errors.youtube) { %><span class="admin-error"><%= errors.youtube %></span><% } %>
+      </div>
+      <div class="admin-field"><label for="pinterest">Pinterest URL</label><input id="pinterest" name="pinterest" type="url" value="<%= settings.contact.pinterest || '' %>" placeholder="https://pinterest.com/…">
+        <% if (errors && errors.pinterest) { %><span class="admin-error"><%= errors.pinterest %></span><% } %>
+      </div>
+    </div>
+
+    <h3 class="admin-form-section">Map Embed (Contact page)</h3>
+    <div class="admin-grid">
+      <div class="admin-field admin-field--wide">
+        <label for="mapsEmbed">Google Maps embed URL</label>
+        <input id="mapsEmbed" name="mapsEmbed" type="url" value="<%= settings.mapsEmbed || '' %>" placeholder="https://www.google.com/maps/embed?pb=…">
+        <p class="admin-note">Paste the full embed URL from Google Maps (Share → Embed a map). Leave empty to hide the map.</p>
+      </div>
+    </div>
+
+    <h3 class="admin-form-section">Footer</h3>
+    <div class="admin-grid">
+      <div class="admin-field admin-field--wide">
+        <label for="footerText">Footer about text</label>
+        <textarea id="footerText" name="footerText" rows="3" maxlength="500"><%= settings.footerText || '' %></textarea>
+      </div>
+      <div class="admin-field admin-field--wide">
+        <label for="copyright">Copyright line (after © year and shop name)</label>
+        <input id="copyright" name="copyright" type="text" value="<%= settings.copyright || '' %>" maxlength="200" placeholder="All rights reserved">
+      </div>
+    </div>
+
+    <h3 class="admin-form-section">SEO Defaults</h3>
+    <div class="admin-grid">
+      <div class="admin-field">
+        <label for="defaultMetaTitle">Default meta title</label>
+        <input id="defaultMetaTitle" name="defaultMetaTitle" type="text" value="<%= settings.seo && settings.seo.defaultMetaTitle || '' %>" maxlength="60">
+      </div>
+      <div class="admin-field">
+        <label for="defaultKeywords">Default keywords (comma separated)</label>
+        <input id="defaultKeywords" name="defaultKeywords" type="text" value="<%= settings.seo && settings.seo.defaultKeywords || '' %>">
+      </div>
+      <div class="admin-field admin-field--wide">
+        <label for="defaultMetaDescription">Default meta description</label>
+        <textarea id="defaultMetaDescription" name="defaultMetaDescription" rows="3" maxlength="160"><%= settings.seo && settings.seo.defaultMetaDescription || '' %></textarea>
+      </div>
+    </div>
+
+    <div class="admin-form-actions">
+      <button type="submit" class="admin-btn admin-btn--primary admin-btn--lg">Save Settings</button>
+    </div>
+  </form>
+</div>

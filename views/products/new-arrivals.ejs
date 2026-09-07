@@ -1,0 +1,31 @@
+<div class="page-header">
+  <div class="container">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li><a href="/catalog">Catalog</a></li>
+        <li aria-current="page">New Arrivals</li>
+      </ol>
+    </nav>
+    <h1 class="page-title">New Arrivals</h1>
+    <p class="page-subtitle">Fresh from our atelier - the latest designs to join the collection</p>
+  </div>
+</div>
+
+<div class="new-arrivals-page">
+  <div class="container">
+    <% if (products.length > 0) { %>
+      <div class="product-grid" role="list">
+        <% products.forEach(product => { %>
+          <%- include('../partials/product-card', { product }) %>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <div class="no-results">
+        <h3>No new arrivals yet</h3>
+        <p>Check back soon for the latest additions to our collection.</p>
+        <a href="/catalog" class="btn btn-primary">Browse Catalog</a>
+      </div>
+    <% } %>
+  </div>
+</div>

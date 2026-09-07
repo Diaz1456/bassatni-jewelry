@@ -1,0 +1,42 @@
+<div class="admin-toolbar">
+  <div>
+    <p class="admin-muted"><%= images.length %> image<%= images.length === 1 ? '' : 's' %> in the media library. Copy a URL to paste it anywhere (product descriptions, pages, integrations).</p>
+  </div>
+  <div class="admin-search">
+    <form method="get" action="/admin/media">
+      <select name="folder" onchange="this.form.submit()">
+        <option value="">All folders</option>
+        <% folders.forEach(f => { %>
+          <option value="<%= f %>" <%= folder === f ? 'selected' : '' %>><%= f %></option>
+        <% }) %>
+      </select>
+      <noscript><button type="submit" class="admin-btn">Filter</button></noscript>
+    </form>
+  </div>
+</div>
+
+<div class="admin-media-grid">
+  <% if (!images.length) { %>
+    <div class="admin-empty">No images uploaded yet. Add images through products, categories, or site settings and they'll appear here.</div>
+  <% } %>
+
+  <% images.forEach(img => { %>
+    <figure class="admin-media-card" data-media-url="<%= img.url %>">
+      <a href="<%= img.url %>" target="_blank" rel="noopener" class="admin-media-thumb">
+        <img src="<%= img.url %>" alt="" loading="lazy">
+      </a>
+      <figcaption class="admin-media-meta">
+        <span class="admin-media-name" title="<%= img.name %>"><%= img.name %></span>
+        <span class="admin-media-size"><%= (img.size / 1024).toFixed(1) %> KB · <%= img.type %> · <%= img.folder %></span>
+        <div class="admin-media-actions">
+          <button type="button" class="admin-btn admin-btn--sm" data-copy-url="<%= img.url %>">Copy URL</button>
+          <form method="post" action="/admin/media/delete" class="admin-delete-form" data-confirm="Delete <%= img.name %> from disk? Products referencing it will lose this image.">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <input type="hidden" name="url" value="<%= img.url %>">
+            <button type="submit" class="admin-btn admin-btn--sm admin-btn--danger">Delete</button>
+          </form>
+        </div>
+      </figcaption>
+    </figure>
+  <% }) %>
+</div>

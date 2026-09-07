@@ -1,0 +1,31 @@
+<div class="page-header">
+  <div class="container">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li><a href="/catalog">Catalog</a></li>
+        <li aria-current="page">Best Sellers</li>
+      </ol>
+    </nav>
+    <h1 class="page-title">Best Sellers</h1>
+    <p class="page-subtitle">Our most loved pieces, chosen by customers like you</p>
+  </div>
+</div>
+
+<div class="best-sellers-page">
+  <div class="container">
+    <% if (products.length > 0) { %>
+      <div class="product-grid" role="list">
+        <% products.forEach(product => { %>
+          <%- include('../partials/product-card', { product }) %>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <div class="no-results">
+        <h3>No best sellers yet</h3>
+        <p>Be the first to fall in love with one of our pieces.</p>
+        <a href="/catalog" class="btn btn-primary">Browse Catalog</a>
+      </div>
+    <% } %>
+  </div>
+</div>

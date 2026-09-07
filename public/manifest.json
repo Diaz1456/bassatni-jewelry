@@ -1,0 +1,17 @@
+{
+  "name": "Lumina Jewelry",
+  "short_name": "Lumina",
+  "description": "Exquisite handcrafted jewelry for life's precious moments",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#faf9f7",
+  "theme_color": "#1a1a2e",
+  "icons": [
+    {
+      "src": "/images/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

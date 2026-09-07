@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  
+  <title><%= (currentPath === '/' && settings && settings.seo && settings.seo.defaultMetaTitle) ? settings.seo.defaultMetaTitle : title %> | <%= config.name %></title>
+  <meta name="description" content="<%= (currentPath === '/' && settings && settings.seo && settings.seo.defaultMetaDescription) ? settings.seo.defaultMetaDescription : (description || config.description) %>">
+  <meta name="theme-color" content="#0F0F1A">
+  <% if (settings && settings.seo && settings.seo.defaultKeywords) { %>
+    <meta name="keywords" content="<%= settings.seo.defaultKeywords %>">
+  <% } %>
+  
+  <%- structuredData ? `<script type="application/ld+json">${JSON.stringify(structuredData)}</script>` : '' %>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/theme.css">
+  
+  <% if (settings && settings.favicon && settings.favicon.url) { %>
+    <link rel="icon" type="image/png" href="<%= settings.favicon.url %>">
+    <link rel="apple-touch-icon" href="<%= settings.favicon.url %>">
+  <% } else { %>
+    <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
+    <link rel="apple-touch-icon" href="/images/favicon.svg">
+  <% } %>
+  <link rel="manifest" href="/manifest.json">
+  
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="<%= config.name %>">
+  <meta property="og:title" content="<%= title %> | <%= config.name %>">
+  <meta property="og:description" content="<%= description || config.description %>">
+  <meta property="og:url" content="<%= config.url %><%= currentUrl %>">
+  <meta property="og:image" content="<%= config.url %><%= (product && product.mainImage?.url) || '/images/og-default.svg' %>">
+  
+  <meta name="twitter:card" content="summary_large_image">
+  <% const twHandle = (settings && settings.contact && settings.contact.twitter) ? (settings.contact.twitter.split('/').filter(Boolean).pop() || '') : ''; %>
+  <meta name="twitter:site" content="<%= twHandle ? '@' + twHandle.replace(/^@/, '') : '@luminajewelry' %>">
+  <meta name="twitter:title" content="<%= title %> | <%= config.name %>">
+  <meta name="twitter:description" content="<%= description || config.description %>">
+  <meta name="twitter:image" content="<%= config.url %><%= (product && product.mainImage?.url) || '/images/og-default.svg' %>">
+</head>
+<body class="<%= product ? 'product-page' : '' %> <%= category ? 'category-page' : '' %> <%= lookbook ? 'lookbook-page' : '' %>">
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  
+  <%- include('partials/header') %>
+  
+  <main id="main-content" role="main">
+    <%- body %>
+  </main>
+  
+  <%- include('partials/footer') %>
+  
+  <script src="/js/main.js" defer></script>
+  <script>
+    window.SITE_CONFIG = {
+      url: "<%= config.url %>",
+      name: "<%= config.name %>",
+      analyticsId: "<%= analytics.gaId %>"
+    };
+  </script>
+  
+  <% if (analytics.gaId) { %>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=<%= analytics.gaId %>"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', '<%= analytics.gaId %>');
+  </script>
+  <% } %>
+</body>
+</html>

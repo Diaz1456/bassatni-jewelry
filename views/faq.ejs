@@ -1,0 +1,44 @@
+<div class="page-header">
+  <div class="container">
+    <h1 class="page-title">Frequently Asked Questions</h1>
+    <p class="page-subtitle">Find answers to common questions about our jewelry, policies, and services</p>
+  </div>
+</div>
+
+<div class="faq-page">
+  <div class="container">
+    <div class="faq-search">
+      <label for="faq-search" class="visually-hidden">Search FAQs</label>
+      <input type="search" id="faq-search" placeholder="Search questions..." aria-label="Search FAQs">
+    </div>
+    
+    <nav class="faq-categories" aria-label="FAQ Categories">
+      <button class="faq-cat-btn active" data-category="all">All</button>
+      <button class="faq-cat-btn" data-category="orders">Orders & Shipping</button>
+      <button class="faq-cat-btn" data-category="returns">Returns & Exchanges</button>
+      <button class="faq-cat-btn" data-category="jewelry">Jewelry Care</button>
+      <button class="faq-cat-btn" data-category="custom">Custom Design</button>
+      <button class="faq-cat-btn" data-category="payments">Payments</button>
+    </nav>
+    
+    <div class="faq-accordion">
+      <% faqs.forEach((faq, index) => { %>
+        <article class="faq-item" data-category="<%= faq.category || 'general' %>">
+          <button class="faq-question" aria-expanded="false" aria-controls="faq-answer-<%= index %>">
+            <span><%= faq.question %></span>
+            <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-answer" id="faq-answer-<%= index %>" role="region" aria-labelledby="faq-question-<%= index %>" hidden>
+            <p><%= faq.answer %></p>
+          </div>
+        </article>
+      <% }) %>
+    </div>
+    
+    <div class="faq-cta">
+      <h3>Still have questions?</h3>
+      <p>Our team is here to help. Contact us for personalized assistance.</p>
+      <a href="/contact" class="btn btn-primary">Contact Us</a>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,336 @@
+<div class="product-detail-page">
+  <div class="container">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li><a href="/catalog">Catalog</a></li>
+        <% if (product.category) { %>
+          <li><a href="/category/<%= product.category.slug %>"><%= product.category.name %></a></li>
+        <% } %>
+        <li aria-current="page"><%= product.name %></li>
+      </ol>
+    </nav>
+    
+    <div class="product-layout">
+      <div class="product-gallery-section">
+        <div class="product-gallery" role="region" aria-label="Product images">
+          <div class="main-image-wrapper">
+            <div class="main-image-container">
+              <img id="main-product-image" 
+                   src="<%= product.mainImage?.url || '/images/placeholder.svg' %>" 
+                   alt="<%= product.mainImage?.alt || product.name %>" 
+                   class="main-image"
+                   data-zoom-image="<%= product.mainImage?.url || '/images/placeholder.svg' %>">
+              <div class="zoom-lens" aria-hidden="true"></div>
+              <div class="zoom-result" aria-hidden="true"></div>
+            </div>
+            
+            <% if (product.video?.url) { %>
+              <div class="video-toggle" data-video-url="<%= product.video.url %>" data-video-type="<%= product.video.type %>">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                <span>Watch Video</span>
+              </div>
+            <% } %>
+            
+            <% if (product.images360 && product.images360.length > 0) { %>
+              <div class="view-360-toggle">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                <span>360° View</span>
+              </div>
+            <% } %>
+          </div>
+          
+          <div class="thumbnail-nav" role="group" aria-label="Product thumbnails">
+            <button class="thumb-nav-btn thumb-prev" aria-label="Previous thumbnail">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <div class="thumbnails-container">
+              <div class="thumbnails-track">
+                <% product.images.forEach((image, index) => { %>
+                  <button class="thumbnail <%= index === 0 ? 'active' : '' %>" 
+                          data-index="<%= index %>" 
+                          data-image="<%= image.url %>"
+                          data-zoom-image="<%= image.url %>"
+                          aria-label="<%= image.alt %>"
+                          aria-pressed="<%= index === 0 ? 'true' : 'false' %>">
+                    <img src="<%= image.url %>" alt="" loading="lazy" width="100" height="100">
+                  </button>
+                <% }) %>
+              </div>
+            </div>
+            <button class="thumb-nav-btn thumb-next" aria-label="Next thumbnail">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+          </div>
+        </div>
+        
+        <div class="product-share" role="group" aria-label="Share product">
+          <span class="share-label">Share:</span>
+          <a href="https://www.facebook.com/sharer/sharer.php?u=<%= encodeURIComponent(config.url + '/product/' + product.slug) %>" class="share-btn" target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+          </a>
+          <a href="https://pinterest.com/pin/create/button/?url=<%= encodeURIComponent(config.url + '/product/' + product.slug) %>&media=<%= encodeURIComponent(config.url + (product.mainImage?.url || '/images/og-default.jpg')) %>&description=<%= encodeURIComponent(product.name + ' - ' + (product.shortDescription || product.description?.substring(0, 200))) %>" class="share-btn" target="_blank" rel="noopener noreferrer" aria-label="Pin on Pinterest">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          </a>
+          <a href="https://twitter.com/intent/tweet?url=<%= encodeURIComponent(config.url + '/product/' + product.slug) %>&text=<%= encodeURIComponent('Check out this beautiful ' + product.name) %>" class="share-btn" target="_blank" rel="noopener noreferrer" aria-label="Share on Twitter">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/></svg>
+          </a>
+          <button class="share-btn copy-link" data-url="<%= config.url + '/product/' + product.slug %>" aria-label="Copy link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          </button>
+        </div>
+      </div>
+      
+      <div class="product-info-section">
+        <div class="product-meta">
+          <p class="product-sku">SKU: <%= product.sku %></p>
+          <div class="product-rating" aria-label="Rated <%= product.rating.average %> out of 5 stars, <%= product.rating.count %> reviews">
+            <div class="stars" aria-hidden="true">
+              <% for (let i = 1; i <= 5; i++) { %>
+                <svg class="star <%= i <= Math.round(product.rating.average) ? 'filled' : '' %>" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <% } %>
+            </div>
+            <span class="rating-text"><%= product.rating.average %> (<%= product.rating.count %> reviews)</span>
+            <a href="#reviews" class="reviews-link">Write a review</a>
+          </div>
+        </div>
+        
+        <h1 class="product-title"><%= product.name %></h1>
+        
+        <div class="product-price-block">
+          <span class="current-price"><%= formatPrice(product.price) %></span>
+          <% if (product.compareAtPrice && product.compareAtPrice > product.price) { %>
+            <span class="original-price"><%= formatPrice(product.compareAtPrice) %></span>
+            <span class="discount-badge">Save <%= product.discountPercent %>%</span>
+          <% } %>
+        </div>
+        
+        <% if (product.shortDescription) { %>
+          <p class="product-short-desc"><%= product.shortDescription %></p>
+        <% } %>
+        
+        <div class="product-details" role="list" aria-label="Product specifications">
+          <h3 class="details-heading">Details</h3>
+          <dl class="specs-list">
+            <div class="spec-item">
+              <dt>Metal</dt>
+              <dd><%= getMetalLabel(product.metalType, product.metalPurity) %></dd>
+            </div>
+            <% if (product.gemstones && product.gemstones.length > 0 && product.gemstones[0].type !== 'none') { %>
+              <div class="spec-item">
+                <dt>Gemstones</dt>
+                <dd>
+                  <% product.gemstones.forEach((gem, i) => { %>
+                    <% if (i > 0) { %>, <% } %>
+                    <%= gem.count > 1 ? gem.count + 'x ' : '' %><%= capitalize(gem.type) %><%= gem.carat ? ' (' + gem.carat + 'ct)' : '' %><%= gem.shape ? ', ' + capitalize(gem.shape) : '' %>
+                  <% }) %>
+                </dd>
+              </div>
+            <% } %>
+            <% if (product.measurements && Object.keys(product.measurements).some(k => product.measurements[k])) { %>
+              <div class="spec-item">
+                <dt>Measurements</dt>
+                <dd><%= formatMeasurements(product.measurements) %></dd>
+              </div>
+            <% } %>
+            <% if (product.careInstructions) { %>
+              <div class="spec-item">
+                <dt>Care Instructions</dt>
+                <dd><%= product.careInstructions %></dd>
+              </div>
+            <% } %>
+          </dl>
+        </div>
+        
+        <div class="product-actions">
+          <div class="quantity-selector">
+            <label for="quantity" class="visually-hidden">Quantity</label>
+            <button type="button" class="qty-btn qty-minus" aria-label="Decrease quantity">-</button>
+            <input type="number" id="quantity" name="quantity" value="1" min="1" max="<%= product.stockQuantity || 10 %>" class="qty-input">
+            <button type="button" class="qty-btn qty-plus" aria-label="Increase quantity">+</button>
+          </div>
+          <button class="btn btn-primary btn-lg add-to-cart-btn" 
+                  data-product-slug="<%= product.slug %>" 
+                  data-product-name="<%= product.name %>"
+                  data-product-price="<%= product.price %>"
+                  data-product-image="<%= (product.mainImage?.url || '/images/placeholder.svg') %>"
+                  data-product-url="/product/<%= product.slug %>"
+                  <%= !product.inStock ? 'disabled' : '' %>>
+            <%= product.inStock ? 'Add to Cart' : 'Out of Stock' %>
+          </button>
+          <button class="btn btn-secondary btn-lg wishlist-btn" 
+                  data-product-slug="<%= product.slug %>"
+                  data-product-name="<%= product.name %>"
+                  data-product-price="<%= product.price %>"
+                  data-product-image="<%= (product.mainImage?.url || '/images/placeholder.svg') %>"
+                  data-product-url="/product/<%= product.slug %>"
+                  aria-label="Add to wishlist">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            <span>Wishlist</span>
+          </button>
+        </div>
+        
+        <div class="product-guarantees">
+          <div class="guarantee">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span>Authenticity Guaranteed</span>
+          </div>
+          <div class="guarantee">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12V7H5v5"/><path d="M16 19h6"/><path d="M21 12a9 9 0 0 0-9-9 9 9 0 0 0-9 9v6"/><path d="M3 12a9 9 0 0 1 9-9 9 9 0 0 1 9 9v6"/></svg>
+            <span>Free Insured Shipping</span>
+          </div>
+          <div class="guarantee">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span>30-Day Returns</span>
+          </div>
+          <div class="guarantee">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            <span>Lifetime Warranty</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="product-tabs">
+      <div class="tabs-nav" role="tablist" aria-label="Product information">
+        <button role="tab" aria-selected="true" aria-controls="tab-description" id="tab-btn-description" class="tab-btn active">Description</button>
+        <button role="tab" aria-selected="false" aria-controls="tab-specifications" id="tab-btn-specifications" class="tab-btn">Specifications</button>
+        <button role="tab" aria-selected="false" aria-controls="tab-care" id="tab-btn-care" class="tab-btn">Care Guide</button>
+        <button role="tab" aria-selected="false" aria-controls="tab-reviews" id="tab-btn-reviews" class="tab-btn">Reviews (<%= product.rating.count %>)</button>
+      </div>
+      
+      <div class="tab-panels">
+        <div role="tabpanel" id="tab-description" aria-labelledby="tab-btn-description" class="tab-panel active">
+          <div class="product-description"><%= product.description %></div>
+        </div>
+        
+        <div role="tabpanel" id="tab-specifications" aria-labelledby="tab-btn-specifications" class="tab-panel">
+          <table class="specs-table">
+            <thead>
+              <tr><th>Property</th><th>Detail</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Metal Type</td><td><%= getMetalLabel(product.metalType, product.metalPurity) %></td></tr>
+              <% if (product.gemstones && product.gemstones.length > 0) { %>
+                <% product.gemstones.forEach((gem, i) => { %>
+                  <tr><td>Gemstone <%= product.gemstones.length > 1 ? (i + 1) : '' %></td><td><%= capitalize(gem.type) %><%= gem.carat ? ' - ' + gem.carat + 'ct' : '' %><%= gem.shape ? ', ' + capitalize(gem.shape) + ' cut' : '' %></td></tr>
+                  <% if (gem.clarity && gem.clarity !== 'N/A') { %><tr><td>Clarity</td><td><%= gem.clarity %></td></tr><% } %>
+                  <% if (gem.color && gem.color !== 'N/A') { %><tr><td>Color</td><td><%= gem.color %></td></tr><% } %>
+                  <% if (gem.cut && gem.cut !== 'N/A') { %><tr><td>Cut</td><td><%= gem.cut %></td></tr><% } %>
+                <% }) %>
+              <% } %>
+              <% if (product.measurements) { %>
+                <% Object.entries(product.measurements).forEach(([key, value]) => { if (value) { %>
+                  <tr><td><%= capitalizeWords(key.replace(/([A-Z])/g, ' $1')) %></td><td><%= value %><%= ['length', 'width', 'height', 'diameter', 'chainLength', 'braceletLength'].includes(key) ? 'mm' : key === 'weight' ? 'g' : '' %></td></tr>
+                <% } }) %>
+              <% } %>
+              <tr><td>SKU</td><td><%= product.sku %></td></tr>
+              <tr><td>Weight</td><td><%= product.measurements?.weight || 'Varies' %>g</td></tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <div role="tabpanel" id="tab-care" aria-labelledby="tab-btn-care" class="tab-panel">
+          <div class="care-guide">
+            <% if (product.careInstructions) { %>
+              <div class="care-content"><%= product.careInstructions %></div>
+            <% } else { %>
+              <div class="care-content">
+                <h4>General Jewelry Care</h4>
+                <ul>
+                  <li>Store each piece separately in a soft pouch or lined jewelry box to prevent scratching.</li>
+                  <li>Remove jewelry before swimming, bathing, or applying lotions, perfumes, and hairspray.</li>
+                  <li>Clean regularly with a soft, lint-free cloth. For deeper cleaning, use mild soap and warm water.</li>
+                  <li>Avoid exposure to harsh chemicals, chlorine, and extreme temperatures.</li>
+                  <li>Have your jewelry professionally inspected and cleaned annually.</li>
+                </ul>
+                <h4>Metal-Specific Care</h4>
+                <ul>
+                  <li><strong>Gold:</strong> Polish with a gold polishing cloth. Avoid abrasive cleaners.</li>
+                  <li><strong>Silver:</strong> Use a silver polishing cloth to remove tarnish. Store with anti-tarnish strips.</li>
+                  <li><strong>Platinum:</strong> Clean with mild soap and water. Patina can be polished by a jeweler.</li>
+                </ul>
+                <h4>Gemstone Care</h4>
+                <ul>
+                  <li><strong>Diamonds:</strong> Safe for ultrasonic cleaning. Avoid harsh impacts.</li>
+                  <li><strong>Colored Gemstones:</strong> Avoid ultrasonic cleaners. Clean with soft brush and mild soap.</li>
+                  <li><strong>Pearls:</strong> Wipe with soft cloth after each wear. Restring annually.</li>
+                </ul>
+              </div>
+            <% } %>
+          </div>
+        </div>
+        
+        <div role="tabpanel" id="tab-reviews" aria-labelledby="tab-btn-reviews" class="tab-panel">
+          <div class="reviews-section">
+            <div class="reviews-summary">
+              <div class="overall-rating">
+                <span class="rating-number"><%= product.rating.average || '0.0' %></span>
+                <div class="stars-large" aria-hidden="true">
+                  <% for (let i = 1; i <= 5; i++) { %>
+                    <svg class="star <%= i <= Math.round(product.rating.average) ? 'filled' : '' %>" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                  <% } %>
+                </div>
+                <span class="rating-count"><%= product.rating.count %> reviews</span>
+              </div>
+              <div class="rating-bars">
+                <% for (let i = 5; i >= 1; i--) { %>
+                  <div class="rating-bar">
+                    <span class="bar-label"><%= i %>★</span>
+                    <div class="bar-track"><div class="bar-fill" style="width: <%= (product.rating.count > 0 ? (Math.random() * 30 + 40) : 0) %>%"></div></div>
+                    <span class="bar-percent"><%= Math.round(Math.random() * 30 + 40) %>%</span>
+                  </div>
+                <% } %>
+              </div>
+            </div>
+            <div class="reviews-list" id="reviews-list">
+              <p class="no-reviews">No reviews yet. Be the first to review this product!</p>
+            </div>
+            <button class="btn btn-secondary write-review-btn">Write a Review</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <% if (relatedProducts && relatedProducts.length > 0) { %>
+      <section class="related-products section-alt" aria-labelledby="related-heading">
+        <div class="container">
+          <header class="section-header">
+            <h2 id="related-heading" class="section-title">You May Also Like</h2>
+          </header>
+          <div class="product-grid" role="list">
+            <% relatedProducts.forEach(product => { %>
+              <%- include('../partials/product-card', { product }) %>
+            <% }) %>
+          </div>
+        </div>
+      </section>
+    <% } %>
+  </div>
+</div>
+
+<div class="video-modal" id="video-modal" role="dialog" aria-modal="true" aria-labelledby="video-title" aria-hidden="true">
+  <div class="video-modal-overlay"></div>
+  <div class="video-modal-content">
+    <button class="video-modal-close" aria-label="Close video">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div id="video-container"></div>
+  </div>
+</div>
+
+<div class="view-360-modal" id="view-360-modal" role="dialog" aria-modal="true" aria-labelledby="view-360-title" aria-hidden="true">
+  <div class="view-360-overlay"></div>
+  <div class="view-360-content">
+    <button class="view-360-close" aria-label="Close 360° view">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <h2 id="view-360-title" class="visually-hidden">360° Product View</h2>
+    <div class="view-360-viewer" id="view-360-viewer">
+      <img src="<%= product.images360[0]?.url || product.mainImage?.url || '/images/placeholder.svg' %>" alt="360 degree view of <%= product.name %>">
+    </div>
+    <% product.images360.forEach((image, i) => { %>
+      <span data-360-frame data-image="<%= image.url %>" data-index="<%= i %>" hidden></span>
+    <% }) %>
+  </div>
+</div>

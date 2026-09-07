@@ -1,0 +1,59 @@
+<article class="product-card" role="listitem" data-product-id="<%= product._id %>">
+  <button type="button" class="card-wish-btn"
+          data-product-slug="<%= product.slug %>"
+          data-product-name="<%= product.name %>"
+          data-product-price="<%= product.price %>"
+          data-product-image="<%= (product.mainImage?.url || '/images/placeholder.svg') %>"
+          data-product-url="/product/<%= product.slug %>"
+          aria-label="Toggle wishlist for <%= product.name %>">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+    </svg>
+  </button>
+  <a href="/product/<%= product.slug %>" class="product-link" aria-label="<%= product.name %> - <%= formatPrice(product.price) %>">
+    <div class="product-image-wrapper">
+      <img src="<%= product.mainImage?.url || '/images/placeholder.svg' %>" 
+           alt="<%= product.mainImage?.alt || product.name %>" 
+           loading="lazy" 
+           width="400" 
+           height="500"
+           class="product-image">
+      <% if (product.isNew) { %>
+        <span class="product-badge badge-new" aria-label="New arrival">New</span>
+      <% } else if (product.isBestSeller) { %>
+        <span class="product-badge badge-bestseller" aria-label="Best seller">Bestseller</span>
+      <% } %>
+      <% if (product.compareAtPrice && product.compareAtPrice > product.price) { %>
+        <span class="product-badge badge-sale" aria-label="<%= product.discountPercent %>% off">-<%= product.discountPercent %>%</span>
+      <% } %>
+    </div>
+    <div class="product-info">
+      <p class="product-category"><%= product.category?.name || 'Jewelry' %></p>
+      <h3 class="product-name"><%= product.name %></h3>
+      <div class="product-price">
+        <span class="current-price"><%= formatPrice(product.price) %></span>
+        <% if (product.compareAtPrice && product.compareAtPrice > product.price) { %>
+          <span class="original-price"><%= formatPrice(product.compareAtPrice) %></span>
+        <% } %>
+      </div>
+      <% if (product.rating?.count > 0) { %>
+        <div class="product-rating" aria-label="Rated <%= product.rating.average %> out of 5 stars, <%= product.rating.count %> reviews">
+          <div class="stars" aria-hidden="true">
+            <% for (let i = 1; i <= 5; i++) { %>
+              <svg class="star <%= i <= Math.round(product.rating.average) ? 'filled' : '' %>" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+              </svg>
+            <% } %>
+          </div>
+          <span class="rating-count">(<%= product.rating.count %>)</span>
+        </div>
+      <% } %>
+    </div>
+  </a>
+  <button class="quick-add-btn" aria-label="Quick add <%= product.name %> to cart" data-product-slug="<%= product.slug %>">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <line x1="12" y1="5" x2="12" y2="19"/>
+      <line x1="5" y1="12" x2="19" y2="12"/>
+    </svg>
+  </button>
+</article>

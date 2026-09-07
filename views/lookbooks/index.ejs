@@ -1,0 +1,106 @@
+<div class="page-header">
+  <div class="container">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li aria-current="page">Lookbooks</li>
+      </ol>
+    </nav>
+    <h1 class="page-title">Lookbooks & Style Galleries</h1>
+    <p class="page-subtitle">Curated collections for every occasion and season</p>
+  </div>
+</div>
+
+<div class="lookbooks-page">
+  <div class="container">
+    <div class="lookbooks-filters">
+      <form id="lookbook-filters" class="filter-form-inline" action="/lookbooks" method="GET">
+        <div class="filter-group-inline">
+          <label for="season-filter" class="visually-hidden">Season</label>
+          <select id="season-filter" name="season" class="filter-select">
+            <option value="">All Seasons</option>
+            <% seasons.forEach(season => { %>
+              <option value="<%= season %>" <%= filters.season === season ? 'selected' : '' %>><%= capitalize(season) %></option>
+            <% }) %>
+          </select>
+        </div>
+        <div class="filter-group-inline">
+          <label for="year-filter" class="visually-hidden">Year</label>
+          <select id="year-filter" name="year" class="filter-select">
+            <option value="">All Years</option>
+            <% years.forEach(year => { %>
+              <option value="<%= year %>" <%= filters.year == year ? 'selected' : '' %>><%= year %></option>
+            <% }) %>
+          </select>
+        </div>
+        <div class="filter-group-inline">
+          <label class="filter-checkbox">
+            <input type="checkbox" name="featured" value="true" <%= filters.featured ? 'checked' : '' %>> Featured Only
+          </label>
+        </div>
+        <button type="submit" class="btn btn-secondary">Filter</button>
+      </form>
+    </div>
+    
+    <% if (lookbooks.length > 0) { %>
+      <div class="lookbook-grid" role="list">
+        <% lookbooks.forEach(lookbook => { %>
+          <article class="lookbook-card" role="listitem">
+            <a href="/lookbook/<%= lookbook.slug %>" class="lookbook-link" aria-label="View <%= lookbook.title %> lookbook">
+              <div class="lookbook-image">
+                <img src="<%= lookbook.coverImage.url %>" alt="<%= lookbook.coverImage.alt %>" loading="lazy" width="600" height="750">
+              </div>
+              <div class="lookbook-overlay">
+                <div class="lookbook-content">
+                  <% if (lookbook.season && lookbook.year) { %>
+                    <span class="lookbook-season"><%= capitalize(lookbook.season) %> <%= lookbook.year %></span>
+                  <% } %>
+                  <h3 class="lookbook-title"><%= lookbook.title %></h3>
+                  <% if (lookbook.shortDescription) { %>
+                    <p class="lookbook-desc"><%= lookbook.shortDescription %></p>
+                  <% } %>
+                  <span class="lookbook-cta">Explore Collection →</span>
+                </div>
+              </div>
+            </a>
+          </article>
+        <% }) %>
+      </div>
+      
+      <% if (pagination.totalPages > 1) { %>
+        <nav class="pagination" aria-label="Pagination">
+          <% if (pagination.hasPrev) { %>
+            <a href="?<%= Object.entries({...filters, page: pagination.page - 1 }).map(([k,v]) => v ? `${k}=${encodeURIComponent(v)}` : '').filter(Boolean).join('&') %>" class="page-btn" aria-label="Previous page">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+            </a>
+          <% } %>
+          <div class="page-numbers">
+            <% 
+              const startPage = Math.max(1, pagination.page - 2);
+              const endPage = Math.min(pagination.totalPages, pagination.page + 2);
+              for (let i = startPage; i <= endPage; i++) { 
+            %>
+              <a href="?<%= Object.entries({...filters, page: i }).map(([k,v]) => v ? `${k}=${encodeURIComponent(v)}` : '').filter(Boolean).join('&') %>" 
+                 class="page-btn <%= i === pagination.page ? 'active' : '' %>" 
+                 aria-label="Page <%= i %>" 
+                 aria-current="<%= i === pagination.page ? 'page' : 'false' %>">
+                <%= i %>
+              </a>
+            <% } %>
+          </div>
+          <% if (pagination.hasNext) { %>
+            <a href="?<%= Object.entries({...filters, page: pagination.page + 1 }).map(([k,v]) => v ? `${k}=${encodeURIComponent(v)}` : '').filter(Boolean).join('&') %>" class="page-btn" aria-label="Next page">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+            </a>
+          <% } %>
+        </nav>
+      <% } %>
+    <% } else { %>
+      <div class="no-results">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        <h3>No lookbooks found</h3>
+        <p>Check back soon for new collections</p>
+      </div>
+    <% } %>
+  </div>
+</div>

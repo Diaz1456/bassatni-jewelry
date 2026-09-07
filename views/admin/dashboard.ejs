@@ -1,0 +1,85 @@
+<div class="admin-stats-grid">
+  <div class="admin-stat-card">
+    <span class="admin-stat-label">Total Products</span>
+    <span class="admin-stat-value"><%= stats.products %></span>
+    <a class="admin-stat-link" href="/admin/products">View all →</a>
+  </div>
+  <div class="admin-stat-card">
+    <span class="admin-stat-label">Active</span>
+    <span class="admin-stat-value"><%= stats.active %></span>
+    <a class="admin-stat-link" href="/admin/products?status=active">Live on site →</a>
+  </div>
+  <div class="admin-stat-card">
+    <span class="admin-stat-label">Categories</span>
+    <span class="admin-stat-value"><%= stats.categories %></span>
+    <a class="admin-stat-link" href="/admin/categories">Manage categories →</a>
+  </div>
+  <div class="admin-stat-card">
+    <span class="admin-stat-label">Low Stock</span>
+    <span class="admin-stat-value <%= stats.lowStock > 0 ? 'admin-stat-warn' : '' %>"><%= stats.lowStock %></span>
+    <a class="admin-stat-link" href="/admin/products?status=active">Review inventory →</a>
+  </div>
+  <div class="admin-stat-card">
+    <span class="admin-stat-label">Best Sellers</span>
+    <span class="admin-stat-value"><%= stats.bestSellers %></span>
+    <a class="admin-stat-link" href="/admin/products?sort=-soldCount">Top performers →</a>
+  </div>
+  <div class="admin-stat-card">
+    <span class="admin-stat-label">New Arrivals</span>
+    <span class="admin-stat-value"><%= stats.newArrivals %></span>
+    <a class="admin-stat-link" href="/admin/products?status=active">Manage →</a>
+  </div>
+</div>
+
+<div class="admin-quick-links">
+  <a class="admin-btn admin-btn--primary" href="/admin/products/new">⊕ Add Product</a>
+  <a class="admin-btn" href="/admin/categories/new">⊕ Add Category</a>
+  <a class="admin-btn" href="/admin/products">View All Products</a>
+  <a class="admin-btn" href="/admin/media">Image Library</a>
+  <a class="admin-btn" href="/admin/settings">Edit Site Settings</a>
+</div>
+
+<% if (stats.deleted > 0) { %>
+  <div class="admin-flash admin-flash--success" role="status">
+    <p><%= stats.deleted %> product<%= stats.deleted === 1 ? ' is' : 's are' %> in the trash. <a href="/admin/products?status=deleted" class="admin-link">Review trash →</a></p>
+  </div>
+<% } %>
+
+<section class="admin-panel">
+  <h2 class="admin-panel-title">Recent Products</h2>
+  <div class="admin-table-wrap">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Image</th>
+          <th>Name</th>
+          <th>SKU</th>
+          <th>Price</th>
+          <th>Category</th>
+          <th>Flags</th>
+          <th>Added</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (!recentProducts.length) { %>
+          <tr><td colspan="7" class="admin-empty">No products yet. <a href="/admin/products/new">Add your first product →</a></td></tr>
+        <% } %>
+        <% recentProducts.forEach(product => { %>
+          <tr>
+            <td><img class="admin-thumb" src="<%= product.mainImage?.url || '/images/placeholder.svg' %>" alt=""></td>
+            <td><a href="/admin/products/<%= product._id %>/edit"><%= product.name %></a></td>
+            <td><%= product.sku %></td>
+            <td><%= formatPrice(product.price) %></td>
+            <td><%= product.category ? product.category.name : '—' %></td>
+            <td class="admin-flags">
+              <% if (product.isNew) { %><span class="admin-badge">New</span><% } %>
+              <% if (product.isBestSeller) { %><span class="admin-badge admin-badge--gold">Best Seller</span><% } %>
+              <% if (!product.isActive) { %><span class="admin-badge admin-badge--danger">Hidden</span><% } %>
+            </td>
+            <td><%= formatDate(product.createdAt, 'en-US', { year: 'numeric', month: 'short', day: 'numeric' }) %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</section>

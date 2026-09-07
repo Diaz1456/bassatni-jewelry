@@ -1,0 +1,228 @@
+<div class="admin-panel">
+  <h2 class="admin-panel-title"><%= product ? `Edit: ${product.name}` : 'Add New Product' %></h2>
+  <% if (product) { %>
+    <p class="admin-muted">All changes are saved to the database immediately. <a href="/product/<%= product.slug %>" target="_blank" rel="noopener">Preview product ↗</a></p>
+  <% } %>
+
+  <form method="post"
+        enctype="multipart/form-data"
+        action="<%= product ? `/admin/products/${product._id}/edit` : '/admin/products/new' %>"
+        class="admin-form"
+        novalidate
+        data-validate="product">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+    <h3 class="admin-form-section">Basics</h3>
+    <div class="admin-grid">
+      <div class="admin-field admin-field--wide">
+        <label for="name">Product name <span class="req">*</span></label>
+        <input id="name" name="name" type="text" value="<%= form.name || '' %>" required maxlength="100" data-sku-name>
+        <% if (errors.name) { %><span class="admin-error"><%= errors.name %></span><% } %>
+      </div>
+      <div class="admin-field">
+        <label for="sku">SKU <span class="req">*</span></label>
+        <div class="admin-sku-row">
+          <input id="sku" name="sku" type="text" value="<%= form.sku || '' %>" required maxlength="50" data-sku-field>
+          <button type="button" class="admin-btn admin-btn--sm" data-sku-generate aria-label="Generate SKU from product name">Auto</button>
+        </div>
+        <% if (errors.sku) { %><span class="admin-error"><%= errors.sku %></span><% } %>
+      </div>
+      <div class="admin-field">
+        <label for="category">Category <span class="req">*</span></label>
+        <select id="category" name="category" required>
+          <option value="">— Select category —</option>
+          <% categories.forEach(cat => { %>
+            <option value="<%= cat._id %>" <%= String(form.category || '') === String(cat._id) ? 'selected' : '' %>><%= cat.name %></option>
+          <% }) %>
+        </select>
+        <% if (errors.category) { %><span class="admin-error"><%= errors.category %></span><% } %>
+        <% if (!categories.length) { %><span class="admin-warn">No categories exist yet. Run the seed script to create defaults.</span><% } %>
+      </div>
+      <div class="admin-field">
+        <label for="priceUsd">Price (USD) <span class="req">*</span></label>
+        <div class="admin-input-suffix"><span class="admin-input-suffix-addon">$</span><input id="priceUsd" name="priceUsd" type="number" step="0.01" min="0" value="<%= form.priceUsd || '' %>" required></div>
+        <% if (errors.priceUsd) { %><span class="admin-error"><%= errors.priceUsd %></span><% } %>
+      </div>
+      <div class="admin-field">
+        <label for="compareAtPriceUsd">Compare-at price (USD, optional)</label>
+        <div class="admin-input-suffix"><span class="admin-input-suffix-addon">$</span><input id="compareAtPriceUsd" name="compareAtPriceUsd" type="number" step="0.01" min="0" value="<%= form.compareAtPriceUsd || '' %>"></div>
+      </div>
+      <div class="admin-field">
+        <label for="stockQuantity">Stock quantity</label>
+        <input id="stockQuantity" name="stockQuantity" type="number" min="0" value="<%= form.stockQuantity || 0 %>">
+      </div>
+      <div class="admin-field">
+        <label for="videoUrl">Video URL (YouTube / MP4, optional)</label>
+        <input id="videoUrl" name="videoUrl" type="url" value="<%= form.videoUrl || '' %>" placeholder="https://www.youtube.com/watch?v=…">
+        <% if (errors.videoUrl) { %><span class="admin-error"><%= errors.videoUrl %></span><% } %>
+      </div>
+      <div class="admin-field admin-field--wide">
+        <label for="shortDescription">Short description (optional)</label>
+        <input id="shortDescription" name="shortDescription" type="text" value="<%= form.shortDescription || '' %>" maxlength="300">
+      </div>
+      <div class="admin-field admin-field--wide">
+        <label for="description">Description <span class="req">*</span></label>
+        <textarea id="description" name="description" rows="6" required maxlength="5000"><%= form.description || '' %></textarea>
+        <% if (errors.description) { %><span class="admin-error"><%= errors.description %></span><% } %>
+      </div>
+    </div>
+
+    <h3 class="admin-form-section">Material &amp; Gemstone</h3>
+    <div class="admin-grid">
+      <div class="admin-field">
+        <label for="metalType">Metal type <span class="req">*</span></label>
+        <select id="metalType" name="metalType" required>
+          <option value="">— Select metal —</option>
+          <% metals.forEach(metal => { %>
+            <option value="<%= metal %>" <%= form.metalType === metal ? 'selected' : '' %>><%= capitalizeWords(metal.replace('-', ' ')) %></option>
+          <% }) %>
+        </select>
+        <% if (errors.metalType) { %><span class="admin-error"><%= errors.metalType %></span><% } %>
+      </div>
+      <div class="admin-field">
+        <label for="metalPurity">Purity / Karat</label>
+        <select id="metalPurity" name="metalPurity">
+          <% purities.forEach(p => { %>
+            <option value="<%= p %>" <%= form.metalPurity === p ? 'selected' : '' %>><%= p %></option>
+          <% }) %>
+        </select>
+      </div>
+      <div class="admin-field">
+        <label for="gemstoneType">Gemstone type</label>
+        <select id="gemstoneType" name="gemstoneType">
+          <option value="none">None</option>
+          <% gemstones.forEach(g => { %>
+            <option value="<%= g %>" <%= (form.gemstoneType || 'none') === g ? 'selected' : '' %>><%= capitalizeWords(g.replace('-', ' ')) %></option>
+          <% }) %>
+        </select>
+      </div>
+      <div class="admin-field">
+        <label for="gemstoneCarat">Gemstone carat (optional)</label>
+        <input id="gemstoneCarat" name="gemstoneCarat" type="number" step="0.01" min="0" value="<%= form.gemstoneCarat || '' %>">
+      </div>
+      <div class="admin-field">
+        <label for="gemstoneClarity">Clarity</label>
+        <select id="gemstoneClarity" name="gemstoneClarity">
+          <% ['N/A','FL','IF','VVS1','VVS2','VS1','VS2','SI1','SI2','I1','I2','I3'].forEach(c => { %>
+            <option value="<%= c %>" <%= form.gemstoneClarity === c ? 'selected' : '' %>><%= c %></option>
+          <% }) %>
+        </select>
+      </div>
+      <div class="admin-field">
+        <label for="gemstoneColor">Color grade</label>
+        <select id="gemstoneColor" name="gemstoneColor">
+          <% ['N/A','D','E','F','G','H','I','J','K','L','M','N','fancy'].forEach(c => { %>
+            <option value="<%= c %>" <%= form.gemstoneColor === c ? 'selected' : '' %>><%= c %></option>
+          <% }) %>
+        </select>
+      </div>
+      <div class="admin-field">
+        <label for="gemstoneCut">Cut</label>
+        <select id="gemstoneCut" name="gemstoneCut">
+          <% ['N/A','Excellent','Very Good','Good','Fair','Poor'].forEach(c => { %>
+            <option value="<%= c %>" <%= form.gemstoneCut === c ? 'selected' : '' %>><%= c %></option>
+          <% }) %>
+        </select>
+      </div>
+      <div class="admin-field">
+        <label for="gemstoneCount">Stone count</label>
+        <input id="gemstoneCount" name="gemstoneCount" type="number" min="1" value="<%= form.gemstoneCount || 1 %>">
+      </div>
+      <div class="admin-field">
+        <label for="gemstoneShape">Shape</label>
+        <select id="gemstoneShape" name="gemstoneShape">
+          <option value="">—</option>
+          <% ['round','princess','oval','cushion','emerald','radiant','pear','marquise','heart','asscher','baguette','other'].forEach(s => { %>
+            <option value="<%= s %>" <%= form.gemstoneShape === s ? 'selected' : '' %>><%= capitalizeWords(s) %></option>
+          <% }) %>
+        </select>
+      </div>
+      <div class="admin-field admin-field--wide">
+        <label>Occasions</label>
+        <div class="admin-checkbox-grid">
+          <% occasions.forEach(occ => { %>
+            <label class="admin-check">
+              <input type="checkbox" name="occasions" value="<%= occ %>"
+                <%= (form.occasions || []).includes(occ) ? 'checked' : '' %>>
+              <span><%= capitalizeWords(occ.replace(/-/g, ' ')) %></span>
+            </label>
+          <% }) %>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="admin-form-section">Measurements</h3>
+    <div class="admin-grid">
+      <% const m = form.measurements || {}; %>
+      <div class="admin-field"><label for="length">Length (mm)</label><input id="length" name="length" type="number" step="0.1" min="0" value="<%= m.length || '' %>"></div>
+      <div class="admin-field"><label for="width">Width (mm)</label><input id="width" name="width" type="number" step="0.1" min="0" value="<%= m.width || '' %>"></div>
+      <div class="admin-field"><label for="height">Height (mm)</label><input id="height" name="height" type="number" step="0.1" min="0" value="<%= m.height || '' %>"></div>
+      <div class="admin-field"><label for="diameter">Diameter (mm)</label><input id="diameter" name="diameter" type="number" step="0.1" min="0" value="<%= m.diameter || '' %>"></div>
+      <div class="admin-field"><label for="weight">Weight (g)</label><input id="weight" name="weight" type="number" step="0.01" min="0" value="<%= m.weight || '' %>"></div>
+      <div class="admin-field"><label for="ringSize">Ring size</label><input id="ringSize" name="ringSize" type="text" value="<%= m.ringSize || '' %>"></div>
+      <div class="admin-field"><label for="chainLength">Chain length (cm)</label><input id="chainLength" name="chainLength" type="number" step="0.1" min="0" value="<%= m.chainLength || '' %>"></div>
+      <div class="admin-field"><label for="braceletLength">Bracelet length (cm)</label><input id="braceletLength" name="braceletLength" type="number" step="0.1" min="0" value="<%= m.braceletLength || '' %>"></div>
+    </div>
+
+    <h3 class="admin-form-section">Care &amp; SEO</h3>
+    <div class="admin-grid">
+      <div class="admin-field admin-field--wide">
+        <label for="careInstructions">Care instructions (optional)</label>
+        <textarea id="careInstructions" name="careInstructions" rows="4" maxlength="2000"><%= form.careInstructions || '' %></textarea>
+      </div>
+      <div class="admin-field">
+        <label for="metaTitle">SEO meta title (optional)</label>
+        <input id="metaTitle" name="metaTitle" type="text" value="<%= form.metaTitle || '' %>" maxlength="60">
+      </div>
+      <div class="admin-field">
+        <label for="metaDescription">SEO meta description (optional)</label>
+        <input id="metaDescription" name="metaDescription" type="text" value="<%= form.metaDescription || '' %>" maxlength="160">
+      </div>
+    </div>
+
+    <h3 class="admin-form-section">Visibility</h3>
+    <div class="admin-grid">
+      <div class="admin-field admin-field--wide">
+        <div class="admin-checkbox-row">
+          <label class="admin-check"><input type="checkbox" name="inStock" <%= form.inStock ? 'checked' : '' %>> In stock</label>
+          <label class="admin-check"><input type="checkbox" name="isNew" <%= form.isNew ? 'checked' : '' %>> New arrival</label>
+          <label class="admin-check"><input type="checkbox" name="isBestSeller" <%= form.isBestSeller ? 'checked' : '' %>> Best seller</label>
+          <label class="admin-check"><input type="checkbox" name="isFeatured" <%= form.isFeatured ? 'checked' : '' %>> Featured</label>
+          <label class="admin-check"><input type="checkbox" name="isActive" <%= form.isActive === false ? '' : 'checked' %>> Visible on site</label>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="admin-form-section">Photos</h3>
+    <div class="admin-grid">
+      <div class="admin-field admin-field--wide">
+        <label for="images">Upload images (up to 8; JPEG, PNG, WebP, GIF, SVG, AVIF — 6MB max each)</label>
+        <input id="images" name="images" type="file" accept="image/*" multiple data-admin-image-upload="imagePreviews" data-admin-image-note="imageNote">
+        <ul class="admin-image-previews" id="imagePreviews"></ul>
+        <p class="admin-note" id="imageNote">The first image becomes the main product photo. Uploaded images appear here before saving.</p>
+      </div>
+
+      <% if (product && product.images && product.images.length) { %>
+        <div class="admin-field admin-field--wide">
+          <label>Existing images (check to remove)</label>
+          <div class="admin-existing-images">
+            <% product.images.forEach((img, idx) => { %>
+              <div class="admin-existing-image">
+                <img src="<%= img.url %>" alt="<%= img.alt %>">
+                <label class="admin-check">
+                  <input type="checkbox" name="removeImages" value="<%= idx %>"> Remove
+                </label>
+                <% if (img.type === 'main') { %><span class="admin-badge admin-badge--gold">Main</span><% } %>
+              </div>
+            <% }) %>
+          </div>
+        </div>
+      <% } %>
+    </div>
+
+    <div class="admin-form-actions">
+      <button type="submit" class="admin-btn admin-btn--primary admin-btn--lg"><%= product ? 'Save Changes' : 'Create Product' %></button>
+      <a href="/admin/products" class="admin-btn admin-btn--lg">Cancel</a>
+    </div>
+  </form>
+</div>

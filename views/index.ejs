@@ -1,0 +1,196 @@
+<section class="hero" aria-labelledby="hero-heading">
+  <div class="hero-slider" role="region" aria-label="Featured collections">
+    <div class="hero-slide active" style="background-image: url('<%= settings && settings.hero && settings.hero.image ? settings.hero.image : '/images/hero-1.jpg' %>')">
+      <div class="container">
+        <div class="hero-content">
+          <h1 id="hero-heading" class="hero-title"><%= settings && settings.hero && settings.hero.title ? settings.hero.title : 'Timeless Elegance, Crafted for You' %></h1>
+          <p class="hero-subtitle"><%= settings && settings.hero && settings.hero.subtitle ? settings.hero.subtitle : "Discover exquisite handcrafted jewelry designed to celebrate life's most precious moments." %></p>
+          <a href="/catalog" class="btn btn-primary btn-lg">Shop Now</a>
+        </div>
+      </div>
+    </div>
+    <div class="hero-dots" role="tablist" aria-label="Slide indicators"></div>
+  </div>
+</section>
+
+<section class="featured-categories" aria-labelledby="categories-heading">
+  <div class="container">
+    <header class="section-header">
+      <h2 id="categories-heading" class="section-title">Shop by Category</h2>
+      <p class="section-subtitle">Explore our curated collections of fine jewelry</p>
+    </header>
+    <div class="category-grid" role="list">
+      <% categories.forEach(category => { %>
+        <article class="category-card" role="listitem">
+          <a href="/category/<%= category.slug %>" class="category-link" aria-label="Shop <%= category.name %>">
+            <% if (category.image?.url) { %>
+              <div class="category-image">
+                <img src="<%= category.image.url %>" alt="" loading="lazy" width="400" height="400">
+              </div>
+            <% } else { %>
+              <div class="category-image category-placeholder">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+              </div>
+            <% } %>
+            <div class="category-info">
+              <h3 class="category-name"><%= category.name %></h3>
+              <% if (category.shortDescription) { %>
+                <p class="category-desc"><%= category.shortDescription %></p>
+              <% } %>
+              <span class="category-cta">Explore →</span>
+            </div>
+          </a>
+        </article>
+      <% }) %>
+    </div>
+  </div>
+</section>
+
+<section class="featured-products section-alt" aria-labelledby="new-arrivals-heading">
+  <div class="container">
+    <header class="section-header section-header-with-link">
+      <h2 id="new-arrivals-heading" class="section-title">New Arrivals</h2>
+      <a href="/catalog/new-arrivals" class="section-link">View All <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg></a>
+    </header>
+    <div class="product-grid" role="list">
+      <% newArrivals.forEach(product => { %>
+        <%- include('partials/product-card', { product }) %>
+      <% }) %>
+    </div>
+  </div>
+</section>
+
+<section class="featured-products" aria-labelledby="bestsellers-heading">
+  <div class="container">
+    <header class="section-header section-header-with-link">
+      <h2 id="bestsellers-heading" class="section-title">Best Sellers</h2>
+      <a href="/catalog/best-sellers" class="section-link">View All <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg></a>
+    </header>
+    <div class="product-grid" role="list">
+      <% bestSellers.forEach(product => { %>
+        <%- include('partials/product-card', { product }) %>
+      <% }) %>
+    </div>
+  </div>
+</section>
+
+<section class="featured-lookbooks section-alt" aria-labelledby="lookbooks-heading">
+  <div class="container">
+    <header class="section-header section-header-with-link">
+      <h2 id="lookbooks-heading" class="section-title">Latest Lookbooks</h2>
+      <a href="/lookbooks" class="section-link">View All <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg></a>
+    </header>
+    <div class="lookbook-grid" role="list">
+      <% featuredLookbooks.forEach(lookbook => { %>
+        <article class="lookbook-card" role="listitem">
+          <a href="/lookbook/<%= lookbook.slug %>" class="lookbook-link" aria-label="View <%= lookbook.title %> lookbook">
+            <div class="lookbook-image">
+              <img src="<%= lookbook.coverImage.url %>" alt="<%= lookbook.coverImage.alt %>" loading="lazy" width="600" height="750">
+            </div>
+            <div class="lookbook-overlay">
+              <div class="lookbook-content">
+                <% if (lookbook.season && lookbook.year) { %>
+                  <span class="lookbook-season"><%= lookbook.season %> <%= lookbook.year %></span>
+                <% } %>
+                <h3 class="lookbook-title"><%= lookbook.title %></h3>
+                <% if (lookbook.shortDescription) { %>
+                  <p class="lookbook-desc"><%= lookbook.shortDescription %></p>
+                <% } %>
+                <span class="lookbook-cta">Explore Collection →</span>
+              </div>
+            </div>
+          </a>
+        </article>
+      <% }) %>
+    </div>
+  </div>
+</section>
+
+<section class="testimonials section-alt" aria-labelledby="testimonials-heading">
+  <div class="container">
+    <header class="section-header">
+      <h2 id="testimonials-heading" class="section-title">Client Love</h2>
+      <p class="section-subtitle">Words from those who wear our pieces</p>
+    </header>
+    <div class="testimonial-grid" role="list">
+      <article class="testimonial-card" role="listitem">
+        <div class="testimonial-stars" aria-hidden="true">★★★★★</div>
+        <blockquote class="testimonial-quote">&ldquo;The engagement ring exceeded every expectation. The craftsmanship is breathtaking and the team guided us through every step with grace.&rdquo;</blockquote>
+        <footer class="testimonial-author">
+          <span class="testimonial-name">Arielle M.</span>
+          <span class="testimonial-meta">Bespoke Engagement Ring</span>
+        </footer>
+      </article>
+      <article class="testimonial-card" role="listitem">
+        <div class="testimonial-stars" aria-hidden="true">★★★★★</div>
+        <blockquote class="testimonial-quote">&ldquo;I have bought fine jewelry for years, and the quality of these pieces rivals houses charging twice the price. Truly heirloom grade.&rdquo;</blockquote>
+        <footer class="testimonial-author">
+          <span class="testimonial-name">Dr. Lena R.</span>
+          <span class="testimonial-meta">Eternity Band</span>
+        </footer>
+      </article>
+      <article class="testimonial-card" role="listitem">
+        <div class="testimonial-stars" aria-hidden="true">★★★★★</div>
+        <blockquote class="testimonial-quote">&ldquo;From the velvet box to the final polish, everything felt intentional and luxurious. The anniversary necklace brought her to tears.&rdquo;</blockquote>
+        <footer class="testimonial-author">
+          <span class="testimonial-name">Marcus B.</span>
+          <span class="testimonial-meta">Anniversary Gift</span>
+        </footer>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="features" aria-labelledby="features-heading">
+  <div class="container">
+    <h2 id="features-heading" class="visually-hidden">Our Commitments</h2>
+    <div class="features-grid">
+      <article class="feature">
+        <div class="feature-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <h3>Ethically Sourced</h3>
+        <p>All diamonds and gemstones are conflict-free and responsibly sourced.</p>
+      </article>
+      <article class="feature">
+        <div class="feature-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 12V7H5v5"/><path d="M16 19h6"/><path d="M21 12a9 9 0 0 0-9-9 9 9 0 0 0-9 9v6"/><path d="M3 12a9 9 0 0 1 9-9 9 9 0 0 1 9 9v6"/></svg>
+        </div>
+        <h3>Free Shipping</h3>
+        <p>Complimentary insured shipping on all orders over $500 worldwide.</p>
+      </article>
+      <article class="feature">
+        <div class="feature-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <h3>Lifetime Warranty</h3>
+        <p>Every piece comes with a lifetime warranty against manufacturing defects.</p>
+      </article>
+      <article class="feature">
+        <div class="feature-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </div>
+        <h3>Custom Design</h3>
+        <p>Create your dream piece with our bespoke design service.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="newsletter-section" aria-labelledby="newsletter-heading">
+  <div class="container">
+    <div class="newsletter-content">
+      <h2 id="newsletter-heading">Join the <%= config.name %> Circle</h2>
+      <p>Receive exclusive access to new collections, private events, and styling guides.</p>
+      <form class="newsletter-form-large" action="/newsletter/subscribe" method="POST">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <label for="footer-newsletter" class="visually-hidden">Email address</label>
+        <input type="email" id="footer-newsletter" name="email" placeholder="Enter your email" required autocomplete="email">
+        <button type="submit" class="btn btn-primary">Subscribe</button>
+        <p class="newsletter-privacy">By subscribing, you agree to our <a href="/privacy">Privacy Policy</a>.</p>
+      </form>
+    </div>
+  </div>
+</section>

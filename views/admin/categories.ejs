@@ -1,0 +1,57 @@
+<div class="admin-toolbar">
+  <div>
+    <p class="admin-muted"><%= categories.length %> categor<%= categories.length === 1 ? 'y' : 'ies' %> configured. Categories drive navigation, catalog filters, and products.</p>
+  </div>
+  <a class="admin-btn admin-btn--primary" href="/admin/categories/new">⊕ Add New Category</a>
+</div>
+
+<div class="admin-table-wrap">
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>Image</th>
+        <th>Name</th>
+        <th>Slug</th>
+        <th>Products</th>
+        <th>Order</th>
+        <th>Status</th>
+        <th class="admin-tcol-actions">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (!categories.length) { %>
+        <tr><td colspan="7" class="admin-empty">
+          No categories yet. <a href="/admin/categories/new">Add your first category →</a>
+        </td></tr>
+      <% } %>
+      <% categories.forEach(cat => { %>
+        <tr>
+          <td>
+            <% if (cat.image && cat.image.url) { %>
+              <img class="admin-thumb" src="<%= cat.image.url %>" alt="">
+            <% } else { %>
+              <span class="admin-muted">—</span>
+            <% } %>
+          </td>
+          <td class="admin-cell-name"><a href="/admin/categories/<%= cat._id %>/edit"><%= cat.name %></a></td>
+          <td><code>/<%= cat.slug %></code></td>
+          <td><%= cat.productCount %></td>
+          <td><%= cat.order || 0 %></td>
+          <td>
+            <% if (cat.isActive) { %><span class="admin-badge admin-badge--ok">Active</span>
+            <% } else { %><span class="admin-badge admin-badge--danger">Hidden</span><% } %>
+          </td>
+          <td class="admin-tcol-actions">
+            <div class="admin-row-actions">
+              <a class="admin-btn admin-btn--sm" href="/admin/categories/<%= cat._id %>/edit">Edit</a>
+              <form method="post" action="/admin/categories/<%= cat._id %>/delete" class="admin-delete-form" data-confirm="Delete category '<%= cat.name %>'? Categories with products cannot be deleted.">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <button type="submit" class="admin-btn admin-btn--sm admin-btn--danger">Delete</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>

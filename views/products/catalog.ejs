@@ -1,0 +1,195 @@
+<div class="page-header">
+  <div class="container">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li><a href="/catalog">Catalog</a></li>
+        <li aria-current="page"><%= query ? `Search: "${query}"` : 'All Products' %></li>
+      </ol>
+    </nav>
+    <h1 class="page-title">
+      <%= query ? `Search Results for "${query}"` : 'Product Catalog' %>
+    </h1>
+    <% if (query) { %>
+      <p class="page-subtitle"><%= products.length %> product<%= products.length !== 1 ? 's' : '' %> found</p>
+    <% } %>
+  </div>
+</div>
+
+<div class="catalog-page">
+  <div class="container">
+    <div class="catalog-layout">
+      <aside class="catalog-sidebar" role="complementary" aria-label="Product filters">
+        <div class="filter-panel">
+          <div class="filter-header">
+            <h2>Filters</h2>
+            <button class="clear-filters-btn" aria-label="Clear all filters">Clear All</button>
+          </div>
+          
+          <form id="filter-form" class="filter-form" action="/catalog" method="GET">
+            <% if (query) { %>
+              <input type="hidden" name="q" value="<%= query %>">
+            <% } %>
+            
+            <fieldset class="filter-group">
+              <legend>Category</legend>
+              <div class="filter-options">
+                <% categories?.forEach(cat => { %>
+                  <label class="filter-option">
+                    <input type="radio" name="category" value="<%= cat._id %>" <%= filters.category == cat._id ? 'checked' : '' %>>
+                    <span><%= cat.name %></span>
+                  </label>
+                <% }) %>
+              </div>
+            </fieldset>
+            
+            <fieldset class="filter-group">
+              <legend>Material</legend>
+              <div class="filter-options">
+                <% filterOptions.metalTypes?.forEach(metal => { %>
+                  <label class="filter-option">
+                    <input type="checkbox" name="metalType" value="<%= metal %>" <%= filters.metalType && filters.metalType.includes(metal) ? 'checked' : '' %>>
+                    <span><%= getMetalLabel(metal) %></span>
+                  </label>
+                <% }) %>
+              </div>
+            </fieldset>
+            
+            <fieldset class="filter-group">
+              <legend>Gemstone</legend>
+              <div class="filter-options">
+                <% filterOptions.gemstones?.forEach(gem => { %>
+                  <label class="filter-option">
+                    <input type="checkbox" name="gemstone" value="<%= gem %>" <%= filters.gemstone && filters.gemstone.includes(gem) ? 'checked' : '' %>>
+                    <span><%= capitalize(gem) %></span>
+                  </label>
+                <% }) %>
+              </div>
+            </fieldset>
+            
+            <fieldset class="filter-group">
+              <legend>Occasion</legend>
+              <div class="filter-options">
+                <% filterOptions.occasions?.forEach(occ => { %>
+                  <label class="filter-option">
+                    <input type="checkbox" name="occasion" value="<%= occ %>" <%= filters.occasion && filters.occasion.includes(occ) ? 'checked' : '' %>>
+                    <span><%= getOccasionLabel(occ) %></span>
+                  </label>
+                <% }) %>
+              </div>
+            </fieldset>
+            
+            <fieldset class="filter-group">
+              <legend>Price Range</legend>
+              <div class="price-range-filter">
+                <div class="price-inputs">
+                  <label for="min-price">Min</label>
+                  <input type="number" id="min-price" name="minPrice" value="<%= filters.minPrice || '' %>" min="0" step="100" placeholder="$0">
+                  <label for="max-price">Max</label>
+                  <input type="number" id="max-price" name="maxPrice" value="<%= filters.maxPrice || '' %>" min="0" step="100" placeholder="$<%= filterOptions.priceRange?.max || 10000 %>">
+                </div>
+                <div class="price-slider" role="slider" aria-label="Price range" aria-valuemin="0" aria-valuemax="<%= filterOptions.priceRange?.max || 10000 %>" tabindex="0"></div>
+              </div>
+            </fieldset>
+            
+            <fieldset class="filter-group">
+              <legend>Special</legend>
+              <div class="filter-options">
+                <label class="filter-option">
+                  <input type="checkbox" name="isNew" value="true" <%= filters.isNew === 'true' ? 'checked' : '' %>> New Arrivals
+                </label>
+                <label class="filter-option">
+                  <input type="checkbox" name="isBestSeller" value="true" <%= filters.isBestSeller === 'true' ? 'checked' : '' %>> Best Sellers
+                </label>
+                <label class="filter-option">
+                  <input type="checkbox" name="inStock" value="true" <%= filters.inStock !== 'false' ? 'checked' : '' %>> In Stock Only
+                </label>
+              </div>
+            </fieldset>
+            
+            <button type="submit" class="btn btn-primary btn-block apply-filters-btn">Apply Filters</button>
+          </form>
+        </div>
+      </aside>
+      
+      <div class="catalog-main">
+        <div class="catalog-toolbar">
+          <div class="results-info">
+            <span><%= products.length %> of <%= pagination.total %> products</span>
+          </div>
+          <div class="toolbar-actions">
+            <label for="sort-select" class="visually-hidden">Sort by</label>
+            <select id="sort-select" name="sort" class="sort-select">
+              <option value="-createdAt" <%= filters.sort === '-createdAt' ? 'selected' : '' %>>Newest</option>
+              <option value="createdAt" <%= filters.sort === 'createdAt' ? 'selected' : '' %>>Oldest</option>
+              <option value="price" <%= filters.sort === 'price' ? 'selected' : '' %>>Price: Low to High</option>
+              <option value="-price" <%= filters.sort === '-price' ? 'selected' : '' %>>Price: High to Low</option>
+              <option value="name" <%= filters.sort === 'name' ? 'selected' : '' %>>Name: A-Z</option>
+              <option value="-name" <%= filters.sort === '-name' ? 'selected' : '' %>>Name: Z-A</option>
+              <option value="-rating.average" <%= filters.sort === '-rating.average' ? 'selected' : '' %>>Top Rated</option>
+            </select>
+            <div class="view-toggle" role="group" aria-label="View options">
+              <button type="button" class="view-btn active" data-view="grid" aria-pressed="true" aria-label="Grid view">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+              </button>
+              <button type="button" class="view-btn" data-view="list" aria-pressed="false" aria-label="List view">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <% if (products.length > 0) { %>
+          <div class="product-grid" role="list" id="product-grid">
+            <% products.forEach(product => { %>
+              <%- include('../partials/product-card', { product }) %>
+            <% }) %>
+          </div>
+          
+          <% if (pagination.totalPages > 1) { %>
+            <nav class="pagination" aria-label="Pagination">
+              <% if (pagination.hasPrev) { %>
+                <a href="?<%= Object.entries({...filters, page: pagination.page - 1 }).map(([k,v]) => v ? `${k}=${encodeURIComponent(v)}` : '').filter(Boolean).join('&') %>" class="page-btn" aria-label="Previous page">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+                </a>
+              <% } %>
+              <div class="page-numbers">
+                <% 
+                  const startPage = Math.max(1, pagination.page - 2);
+                  const endPage = Math.min(pagination.totalPages, pagination.page + 2);
+                  for (let i = startPage; i <= endPage; i++) { 
+                %>
+                  <a href="?<%= Object.entries({...filters, page: i }).map(([k,v]) => v ? `${k}=${encodeURIComponent(v)}` : '').filter(Boolean).join('&') %>" 
+                     class="page-btn <%= i === pagination.page ? 'active' : '' %>" 
+                     aria-label="Page <%= i %>" 
+                     aria-current="<%= i === pagination.page ? 'page' : 'false' %>">
+                    <%= i %>
+                  </a>
+                <% } %>
+              </div>
+              <% if (pagination.hasNext) { %>
+                <a href="?<%= Object.entries({...filters, page: pagination.page + 1 }).map(([k,v]) => v ? `${k}=${encodeURIComponent(v)}` : '').filter(Boolean).join('&') %>" class="page-btn" aria-label="Next page">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+                </a>
+              <% } %>
+            </nav>
+          <% } %>
+        <% } else { %>
+          <div class="no-results">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/><line x1="12" y1="8" x2="12" y2="12"/></svg>
+            <h3>No products found</h3>
+            <p>Try adjusting your filters or search terms</p>
+            <a href="/catalog" class="btn btn-primary">View All Products</a>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="mobile-filter-toggle" aria-label="Open filters">
+  <button class="btn btn-secondary" id="open-filters-btn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
+    Filters (<span id="active-filter-count">0</span>)
+  </button>
+</div>

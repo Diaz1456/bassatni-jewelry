@@ -1,0 +1,142 @@
+<div class="page-header">
+  <div class="container">
+    <h1 class="page-title">Contact Us</h1>
+    <p class="page-subtitle">We'd love to hear from you</p>
+  </div>
+</div>
+
+<div class="contact-page">
+  <div class="container">
+    <div class="contact-layout">
+      <div class="contact-info">
+        <h2>Get in Touch</h2>
+        <p>Our team of jewelry specialists is here to assist you with any questions, whether you're looking for the perfect engagement ring, need help with an existing order, or want to discuss a custom design.</p>
+        
+        <div class="contact-methods">
+          <article class="contact-method">
+            <div class="method-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/></svg>
+            </div>
+            <div class="method-details">
+              <h3>Visit Our Boutique</h3>
+              <address>
+                <%= (settings && settings.contact.address) || '120 Madison Avenue, New York, NY 10016' %><br>
+                United States
+              </address>
+              <p><%= (settings && settings.contact.hours) || 'Mon–Sat: 10am–7pm | Sun: 11am–6pm' %></p>
+            </div>
+          </article>
+          
+          <article class="contact-method">
+            <div class="method-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            </div>
+            <div class="method-details">
+              <h3>Call Us</h3>
+              <p><a href="tel:<%= (settings && settings.contact.phone) || '+1 (555) 123-4567' %>"><%= (settings && settings.contact.phone) || '+1 (555) 123-4567' %></a></p>
+              <p>Mon–Fri: 9am–6pm EST</p>
+            </div>
+          </article>
+          
+          <article class="contact-method">
+            <div class="method-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </div>
+            <div class="method-details">
+              <h3>Email Us</h3>
+              <p><a href="mailto:<%= (settings && settings.contact.email) || 'hello@elegancejewelry.com' %>"><%= (settings && settings.contact.email) || 'hello@elegancejewelry.com' %></a></p>
+              <p>We respond within 24 hours</p>
+            </div>
+          </article>
+          
+          <article class="contact-method">
+            <div class="method-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            </div>
+            <div class="method-details">
+              <h3>Virtual Appointment</h3>
+              <p><a href="mailto:<%= (settings && settings.contact.email) || 'hello@elegancejewelry.com' %>?subject=Virtual%20Appointment">Request a Video Consultation</a></p>
+              <p>Available 7 days a week</p>
+            </div>
+          </article>
+        </div>
+      </div>
+      
+      <div class="contact-form-wrapper">
+        <h2>Send Us a Message</h2>
+        <% if (typeof success !== 'undefined' && success) { %>
+          <div class="form-alert success" role="status"><%= success %></div>
+        <% } %>
+        <% if (typeof error !== 'undefined' && error) { %>
+          <div class="form-alert error" role="alert"><%= error %></div>
+        <% } %>
+        <form class="contact-form" action="/contact" method="POST" novalidate>
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="firstName">First Name *</label>
+              <input type="text" id="firstName" name="firstName" required autocomplete="given-name">
+            </div>
+            <div class="form-group">
+              <label for="lastName">Last Name *</label>
+              <input type="text" id="lastName" name="lastName" required autocomplete="family-name">
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="email">Email Address *</label>
+            <input type="email" id="email" name="email" required autocomplete="email">
+          </div>
+          
+          <div class="form-group">
+            <label for="phone">Phone Number</label>
+            <input type="tel" id="phone" name="phone" autocomplete="tel">
+          </div>
+          
+          <div class="form-group">
+            <label for="subject">Subject *</label>
+            <select id="subject" name="subject" required>
+              <option value="">Select a topic</option>
+              <option value="general">General Inquiry</option>
+              <option value="order">Order Status</option>
+              <option value="custom">Custom Design</option>
+              <option value="repair">Repair Services</option>
+              <option value="appointment">Appointment Booking</option>
+              <option value="wholesale">Wholesale Inquiries</option>
+              <option value="press">Press & Media</option>
+              <option value="careers">Careers</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="message">Message *</label>
+            <textarea id="message" name="message" rows="6" required placeholder="How can we help you?"></textarea>
+          </div>
+          
+          <div class="form-group checkbox-group">
+            <input type="checkbox" id="newsletter" name="newsletter">
+            <label for="newsletter">Subscribe to our newsletter for exclusive offers and updates</label>
+          </div>
+          
+          <button type="submit" class="btn btn-primary btn-block btn-lg">Send Message</button>
+        </form>
+      </div>
+    </div>
+
+    <% if (settings && settings.mapsEmbed) { %>
+      <section class="contact-map" aria-label="Map to our boutique">
+        <h2>Find Our Boutique</h2>
+        <iframe
+          title="Map showing our boutique location"
+          src="<%= settings.mapsEmbed %>"
+          width="100%"
+          height="420"
+          style="border: 0; border-radius: 16px; margin-top: 1.5rem;"
+          allowfullscreen
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"></iframe>
+      </section>
+    <% } %>
+  </div>
+</div>

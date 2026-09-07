@@ -1,0 +1,150 @@
+<footer class="site-footer" role="contentinfo">
+  <div class="footer-main">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-column footer-brand">
+          <a href="/" class="footer-logo" aria-label="<%= config.name %> - Home">
+            <% if (settings && settings.logo && settings.logo.url) { %>
+              <img class="footer-logo-img" src="<%= settings.logo.url %>" alt="<%= settings.logo.alt || config.name %>" height="36">
+            <% } else { %>
+              <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+              </svg>
+              <span><%= config.name %></span>
+            <% } %>
+          </a>
+          <p class="footer-tagline"><%= settings && settings.footerText ? settings.footerText : (settings && settings.tagline ? settings.tagline : config.description) %></p>
+
+          <% const socialList = [
+            { name: 'Instagram', url: settings && settings.contact ? settings.contact.instagram : '', path: 'M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37zM9 8h2M8 4h8a4 4 0 0 1 4 4v8a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V8a4 4 0 0 1 4-4z' },
+            { name: 'Facebook', url: settings && settings.contact ? settings.contact.facebook : '', path: 'M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z' },
+            { name: 'Twitter', url: settings && settings.contact ? settings.contact.twitter : '', path: 'M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z' },
+            { name: 'YouTube', url: settings && settings.contact ? settings.contact.youtube : '', path: 'M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33zM9.75 15.02V8.48L15.5 11.75z' },
+            { name: 'Pinterest', url: settings && settings.contact ? settings.contact.pinterest : '', path: 'M12 2a10 10 0 0 0-4.3 19 .33.33 0 0 0 .4-.16c.22-.53.28-1.06.28-1.06s.1-.5.25-2.1c.71 1.7 2.2 3.7 4.6 3.7 5.6 0 8.3-4.4 8.3-9 0-5.1-4.1-8.4-9.53-8.4zM8.6 18.6a1 1 0 0 1-.15.3c-.5.66-1.4 1.4-1.9 1.5a.37.37 0 0 1-.34-.1c-.4-.5.7-3.8 1.1-4.5.5-1.02.9-2.2.3-2.8-.7-.8-2.5-1.9-2.5-4.2 0-3.4 3.4-4.7 6.4-4.7 4.2 0 6.8 2.4 6.8 6.3 0 4.4-2.4 8.9-6.7 8.9-1.2 0-2.5-.68-3-1.36z' }
+          ]; %>
+          <div class="social-links" role="list" aria-label="Social media links">
+            <% socialList.forEach(social => { %>
+              <% if (social.url) { %>
+                <a href="<%= social.url %>" class="social-link" target="_blank" rel="noopener noreferrer" aria-label="Follow us on <%= social.name %>" role="listitem">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="<%= social.path %>"/></svg>
+                </a>
+              <% } %>
+            <% }) %>
+          </div>
+
+          <% if (settings && settings.contact && (settings.contact.phone || settings.contact.email || settings.contact.address || settings.contact.hours)) { %>
+            <ul class="footer-contact">
+              <% if (settings.contact.phone) { %><li><a href="tel:<%= settings.contact.phone.replace(/[^+\d]/g, '') %>"><%= settings.contact.phone %></a></li><% } %>
+              <% if (settings.contact.email) { %><li><a href="mailto:<%= settings.contact.email %>"><%= settings.contact.email %></a></li><% } %>
+              <% if (settings.contact.address) { %><li><%= settings.contact.address %></li><% } %>
+              <% if (settings.contact.hours) { %><li><%= settings.contact.hours %></li><% } %>
+            </ul>
+          <% } %>
+        </div>
+
+        <div class="footer-column">
+          <h4>Shop</h4>
+          <ul class="footer-links">
+            <li><a href="/catalog">All Jewelry</a></li>
+            <li><a href="/catalog/new-arrivals">New Arrivals</a></li>
+            <li><a href="/catalog/best-sellers">Best Sellers</a></li>
+            <li><a href="/lookbooks">Lookbooks</a></li>
+            <li><a href="/catalog?occasion=engagement">Engagement Rings</a></li>
+            <li><a href="/catalog?occasion=wedding">Wedding Bands</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-column">
+          <h4>Categories</h4>
+          <ul class="footer-links">
+            <% categories?.forEach(cat => { %>
+              <li><a href="/category/<%= cat.slug %>"><%= cat.name %></a></li>
+            <% }) %>
+            <li><a href="/categories">View All</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-column">
+          <h4>Customer Care</h4>
+          <ul class="footer-links">
+            <li><a href="/contact">Contact Us</a></li>
+            <li><a href="/faq">FAQs</a></li>
+            <li><a href="/size-guide">Size Guide</a></li>
+            <li><a href="/about">Our Story</a></li>
+            <li><a href="/wishlist">My Wishlist</a></li>
+            <li><a href="/cart">Shopping Cart</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-column footer-newsletter">
+          <h4>Join Our Circle</h4>
+          <p>Subscribe for exclusive access to new collections, private sales, and styling inspiration.</p>
+          <form class="newsletter-form" action="/newsletter/subscribe" method="POST" aria-label="Newsletter signup">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <label for="newsletter-email" class="visually-hidden">Email address</label>
+            <input type="email" id="newsletter-email" name="email" class="newsletter-input" placeholder="Enter your email" required autocomplete="email" aria-describedby="newsletter-note">
+            <button type="submit" class="btn btn-primary newsletter-btn">Subscribe</button>
+            <p id="newsletter-note" class="newsletter-note">We respect your privacy. Unsubscribe anytime.</p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <div class="container">
+      <div class="footer-bottom-content">
+        <p class="copyright">&copy; <%= new Date().getFullYear() %> <%= config.name %>. <%= settings && settings.copyright ? settings.copyright : 'All rights reserved.' %></p>
+        <nav class="footer-legal" aria-label="Legal links">
+          <a href="/privacy">Privacy Policy</a>
+          <a href="/terms">Terms of Service</a>
+          <a href="/about">About</a>
+          <a href="/contact">Contact</a>
+        </nav>
+      </div>
+
+      <div class="payment-methods" aria-label="Accepted payment methods">
+        <span class="payment-label">We accept:</span>
+        <div class="payment-icons" aria-hidden="true">
+          <svg class="payment-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M2.5 19.5h19v-11h-19v11zm18-10h-7v7h7v-7zm-9 7h7v-7h-7v7zm9-9h-7v7h7v-7zm-18 9h7v7h-7v-7zm9-7h7v7h-7v-7z"/></svg>
+          <svg class="payment-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M21 6H3a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2zm0 14H3V8h18v12z"/></svg>
+          <svg class="payment-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M2.5 19.5h19v-11h-19v11zm18-10h-7v7h7v-7zm-9 7h7v-7h-7v7zm9-9h-7v7h7v-7zm-18 9h7v7h-7v-7zm9-7h7v7h-7v-7z"/></svg>
+          <svg class="payment-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M21 6H3a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2zm0 14H3V8h18v12z"/></svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<div class="mobile-menu-panel" id="mobile-menu-panel" role="dialog" aria-label="Mobile menu" aria-hidden="true">
+  <div class="mobile-menu-header">
+    <h3>Menu</h3>
+    <button class="mobile-menu-close" aria-label="Close menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <nav class="mobile-nav" role="navigation" aria-label="Mobile navigation">
+    <ul class="mobile-nav-list">
+      <li class="mobile-nav-item has-submenu">
+        <button class="mobile-nav-link submenu-toggle" aria-expanded="false" aria-haspopup="true">Shop</button>
+        <ul class="mobile-submenu" role="menu" aria-label="Shop">
+          <% categories?.forEach(cat => { %>
+            <li><a href="/category/<%= cat.slug %>" role="menuitem"><%= cat.name %></a></li>
+          <% }) %>
+          <li><a href="/catalog/new-arrivals" role="menuitem">New Arrivals</a></li>
+          <li><a href="/catalog/best-sellers" role="menuitem">Best Sellers</a></li>
+          <li><a href="/lookbooks" role="menuitem">Lookbooks</a></li>
+        </ul>
+      </li>
+      <li class="mobile-nav-item"><a href="/" class="mobile-nav-link">Home</a></li>
+      <li class="mobile-nav-item"><a href="/catalog" class="mobile-nav-link">All Jewelry</a></li>
+      <li class="mobile-nav-item"><a href="/categories" class="mobile-nav-link">Categories</a></li>
+      <li class="mobile-nav-item"><a href="/about" class="mobile-nav-link">About Us</a></li>
+      <li class="mobile-nav-item"><a href="/contact" class="mobile-nav-link">Contact</a></li>
+      <li class="mobile-nav-item"><a href="/size-guide" class="mobile-nav-link">Size Guide</a></li>
+      <li class="mobile-nav-item"><a href="/wishlist" class="mobile-nav-link">My Wishlist</a></li>
+      <li class="mobile-nav-item"><a href="/cart" class="mobile-nav-link">Shopping Cart</a></li>
+      <li class="mobile-nav-item"><a href="/admin" class="mobile-nav-link">Admin Login</a></li>
+    </ul>
+  </nav>
+</div>

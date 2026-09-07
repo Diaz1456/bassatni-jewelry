@@ -1,0 +1,55 @@
+<div class="admin-panel">
+  <h2 class="admin-panel-title"><%= category ? 'Edit Category' : 'Add Category' %></h2>
+  <p class="admin-muted">Categories appear in the navigation dropdown, footer, home page, and catalog filter sidebar.</p>
+
+  <form method="post" action="<%= category ? '/admin/categories/' + category._id + '/edit' : '/admin/categories/new' %>" enctype="multipart/form-data" class="admin-form" novalidate data-validate="category">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+    <h3 class="admin-form-section">Details</h3>
+    <div class="admin-grid">
+      <div class="admin-field">
+        <label for="name">Name <span class="req">*</span></label>
+        <input id="name" name="name" type="text" value="<%= form.name || '' %>" required maxlength="60" data-slug-source="name" data-slug-target="slug">
+        <% if (errors && errors.name) { %><span class="admin-error"><%= errors.name %></span><% } %>
+      </div>
+      <div class="admin-field">
+        <label for="slug">Slug <span class="req">*</span></label>
+        <input id="slug" name="slug" type="text" value="<%= form.slug || '' %>" required maxlength="80" placeholder="rings">
+        <p class="admin-note">Lowercase letters, numbers, and hyphens. Leave the name field empty on purpose for it to auto-generate.</p>
+        <% if (errors && errors.slug) { %><span class="admin-error"><%= errors.slug %></span><% } %>
+      </div>
+      <div class="admin-field admin-field--wide">
+        <label for="shortDescription">Short description (shown on category cards)</label>
+        <textarea id="shortDescription" name="shortDescription" rows="3" maxlength="200"><%= form.shortDescription || '' %></textarea>
+      </div>
+      <div class="admin-field">
+        <label for="order">Display order</label>
+        <input id="order" name="order" type="number" value="<%= form.order || 0 %>" min="0">
+      </div>
+      <div class="admin-field">
+        <label class="admin-check">
+          <input type="checkbox" name="isActive" id="isActive" <%= form.isActive ? 'checked' : '' %>>
+          Visible on the site
+        </label>
+      </div>
+      <div class="admin-field admin-field--wide">
+        <label for="image">Category image</label>
+        <input id="image" name="image" type="file" accept="image/*" data-admin-image-upload="categoryPreview" data-admin-image-note="categoryNote">
+        <div class="admin-preview-box">
+          <% if (category && category.image && category.image.url) { %>
+            <p class="admin-note">Current image:</p>
+            <img class="admin-hero-preview" id="categoryPreview" src="<%= category.image.url %>" alt="">
+          <% } else { %>
+            <img class="admin-hero-preview is-hidden" id="categoryPreview" alt="Category image preview">
+          <% } %>
+        </div>
+        <p class="admin-note" id="categoryNote">Leave empty to keep the current image.</p>
+      </div>
+    </div>
+
+    <div class="admin-form-actions">
+      <a class="admin-btn" href="/admin/categories">Cancel</a>
+      <button type="submit" class="admin-btn admin-btn--primary admin-btn--lg">Save Category</button>
+    </div>
+  </form>
+</div>

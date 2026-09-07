@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="robots" content="noindex, nofollow">
+  <title><%= title %> | Admin</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/css/admin.css">
+  <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
+</head>
+<body class="admin-body">
+  <div class="admin-shell">
+    <aside class="admin-sidebar">
+      <div class="admin-sidebar-head">
+        <a href="/admin" class="admin-brand">
+          <span class="admin-brand-mark">✦</span>
+          <span><%= settings && settings.shopName ? settings.shopName : config.name %> <em>Admin</em></span>
+        </a>
+      </div>
+      <nav class="admin-nav" aria-label="Admin navigation">
+        <a href="/admin/dashboard" class="admin-nav-link <%= adminPath === '/dashboard' || adminPath === '/' ? 'is-active' : '' %>">
+          <span class="admin-nav-ico">▣</span> Dashboard
+        </a>
+        <a href="/admin/products" class="admin-nav-link <%= adminPath && adminPath.startsWith('/products') ? 'is-active' : '' %>">
+          <span class="admin-nav-ico">✦</span> All Products
+        </a>
+        <a href="/admin/products/new" class="admin-nav-link <%= adminPath === '/products/new' ? 'is-active' : '' %>">
+          <span class="admin-nav-ico">⊕</span> Add Product
+        </a>
+        <a href="/admin/categories" class="admin-nav-link <%= adminPath && adminPath.startsWith('/categories') ? 'is-active' : '' %>">
+          <span class="admin-nav-ico">▤</span> Categories
+        </a>
+        <a href="/admin/media" class="admin-nav-link <%= adminPath && adminPath.startsWith('/media') ? 'is-active' : '' %>">
+          <span class="admin-nav-ico">◲</span> Image Library
+        </a>
+        <a href="/admin/settings" class="admin-nav-link <%= adminPath === '/settings' ? 'is-active' : '' %>">
+          <span class="admin-nav-ico">⚙</span> Site Settings
+        </a>
+      </nav>
+      <div class="admin-sidebar-foot">
+        <a href="/" target="_blank" rel="noopener" class="admin-nav-link">↗ View Public Site</a>
+        <form method="post" action="/admin/logout">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <button type="submit" class="admin-logout-btn">Log out</button>
+        </form>
+      </div>
+    </aside>
+
+    <div class="admin-main">
+      <header class="admin-topbar">
+        <button type="button" class="admin-burger" data-admin-toggle-sidebar aria-label="Toggle navigation">☰</button>
+        <h1 class="admin-page-title"><%= title %></h1>
+        <div class="admin-topbar-right">
+          <% if (typeof currentAdmin !== 'undefined' && currentAdmin) { %>
+            <span class="admin-user-chip"><%= currentAdmin.name %></span>
+          <% } %>
+        </div>
+      </header>
+
+      <main class="admin-content">
+        <% const flashSuccess = flash('success'); %>
+        <% const flashError = flash('error'); %>
+        <% if (flashSuccess.length) { %>
+          <div class="admin-flash admin-flash--success" role="status">
+            <% flashSuccess.forEach(msg => { %><p><%= msg %></p><% }) %>
+          </div>
+        <% } %>
+        <% if (flashError.length) { %>
+          <div class="admin-flash admin-flash--error" role="alert">
+            <% flashError.forEach(msg => { %><p><%= msg %></p><% }) %>
+          </div>
+        <% } %>
+
+        <%- body %>
+      </main>
+    </div>
+  </div>
+
+  <script src="/js/admin.js" defer></script>
+</body>
+</html>
