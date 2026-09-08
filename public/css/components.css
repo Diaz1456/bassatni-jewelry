@@ -75,9 +75,10 @@
 
 .logo-text {
   font-family: var(--font-heading);
-  font-size: 1.5rem;
-  font-weight: 600;
-  letter-spacing: -0.02em;
+  font-size: clamp(1.5rem, 2.6vw, 2rem);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
 }
 
 .main-nav {
@@ -316,8 +317,7 @@
   height: 22px;
 }
 
-.cart-count,
-.wishlist-count {
+.cart-count {
   position: absolute;
   top: 2px;
   right: 2px;

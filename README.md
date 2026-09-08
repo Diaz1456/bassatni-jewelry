@@ -8,7 +8,8 @@ A complete, production-ready jewelry store built with **Node.js + Express + Mong
 - **Shop-first homepage**: the root URL `/` renders the catalog directly (with an elegant CSS/vanilla-JS entrance animation), so visitors land straight in the store
 - **Catalog & Search**: filterable catalog (type, metal, gemstone, price, occasion), typo-tolerant search with autocomplete
 - **Product Detail**: multi-image gallery, material/gemstone specs (incl. gold purity up to 24k, now also **21k**), measurements, care instructions, related products
-- **Cart & Wishlist**: client-side cart and wishlist pages (localStorage) with quantity editing, persistence across sessions, and demo checkout; the wishlist is reachable from the header heart icon (with live count badge), the mobile menu, and footer links
+- **Cart & Wishlist**: client-side cart and wishlist pages (localStorage) with quantity editing, persistence across sessions, and demo checkout; the wishlist is toggled from heart buttons on product cards and product pages (reached via `/wishlist`, the footer, and the mobile menu — it is intentionally absent from the main header so the nav stays icon-free)
+- **Header wordmark**: the shop name (from Settings) is displayed as a large, bold Playfair Display wordmark in the header instead of an image logo, keeping the top bar clean and legible
 - **Static pages**: Contact (validated form + Google Maps embed), FAQ, **Ring Size Guide**
 - **Newsletter signup**, SEO (per-page meta, Open Graph, Twitter cards, JSON-LD Product schema, sitemap + robots.txt)
 - **CSRF protection**: lightweight session-token middleware applied to all public and admin state-changing forms (login, contact, newsletter, settings, product/category/media management, logout)

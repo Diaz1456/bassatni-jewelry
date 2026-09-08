@@ -178,7 +178,8 @@ body::-webkit-scrollbar-thumb {
   color: #ffffff;
   letter-spacing: 0.04em;
   font-family: var(--font-heading);
-  font-size: 1.55rem;
+  font-size: clamp(1.5rem, 2.6vw, 2rem);
+  font-weight: 800;
 }
 .logo-img,
 .footer-logo-img {
@@ -192,8 +193,7 @@ body::-webkit-scrollbar-thumb {
 .header-icon:hover {
   color: var(--color-gold);
 }
-.cart-count,
-.wishlist-count {
+.cart-count {
   background: linear-gradient(135deg, var(--color-gold), var(--color-gold-deep));
   color: #1B1B23;
   font-weight: 700;

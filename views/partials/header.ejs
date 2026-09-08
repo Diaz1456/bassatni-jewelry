@@ -18,14 +18,7 @@
         </button>
 
         <a href="/" class="logo" aria-label="<%= config.name %> - Home">
-          <% if (settings && settings.logo && settings.logo.url) { %>
-            <img class="logo-img" src="<%= settings.logo.url %>" alt="<%= settings.logo.alt || config.name %>" width="auto" height="44">
-          <% } else { %>
-            <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-            </svg>
-            <span class="logo-text"><%= config.name %></span>
-          <% } %>
+          <span class="logo-text shop-name"><%= config.name %></span>
         </a>
       </div>
 
@@ -58,13 +51,6 @@
       </nav>
 
       <div class="header-right">
-        <a href="/wishlist" class="header-icon wishlist-icon" aria-label="Wishlist (0 items)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-          </svg>
-          <span class="wishlist-count" aria-live="polite">0</span>
-        </a>
-
         <a href="/cart" class="header-icon cart-link" aria-label="Shopping cart (0 items)">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
             <circle cx="9" cy="21" r="1"/>
