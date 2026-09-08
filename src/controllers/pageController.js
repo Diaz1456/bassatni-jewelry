@@ -1,41 +1,7 @@
-const { Product, Category, Lookbook } = require('../models');
+const { Product, Category } = require('../models');
 const config = require('../config');
 
 class PageController {
-  async getHome(req, res) {
-    try {
-      const [newArrivals, bestSellers, featuredProducts, featuredLookbooks, categories] = await Promise.all([
-        Product.find({ isNew: true, isActive: true }).sort({ createdAt: -1 }).limit(8).select('name slug price compareAtPrice images isBestSeller').lean({ virtuals: true }),
-        Product.find({ isBestSeller: true, isActive: true }).sort({ 'rating.average': -1, soldCount: -1 }).limit(8).select('name slug price compareAtPrice images rating isNew').lean({ virtuals: true }),
-        Product.find({ isFeatured: true, isActive: true }).sort({ createdAt: -1 }).limit(4).select('name slug price compareAtPrice images').lean({ virtuals: true }),
-        Lookbook.getPublished({ featured: true, limit: 3 }),
-        Category.find({ isActive: true, parent: null }).sort({ order: 1, name: 1 }).select('name slug image shortDescription').lean(),
-      ]);
-
-      res.render('index', {
-        title: config.site.name,
-        description: config.site.description,
-        newArrivals,
-        bestSellers,
-        featuredProducts,
-        featuredLookbooks,
-        categories,
-        analytics: config.analytics,
-      });
-    } catch (error) {
-      console.error('Home page error:', error);
-      res.status(500).render('error', { title: 'Error', message: 'Unable to load home page' });
-    }
-  }
-
-  async getAbout(req, res) {
-    res.render('about', {
-      title: 'About Us',
-      description: 'Learn about our story, craftsmanship, and commitment to quality.',
-      analytics: config.analytics,
-    });
-  }
-
   async getContact(req, res) {
     res.render('contact', {
       title: 'Contact Us',
@@ -170,19 +136,16 @@ class PageController {
 
   async getSitemap(req, res) {
     try {
-      const [products, categories, lookbooks] = await Promise.all([
+      const [products, categories] = await Promise.all([
         Product.find({ isActive: true }).select('slug updatedAt').lean(),
         Category.find({ isActive: true }).select('slug updatedAt').lean(),
-        Lookbook.find({ isPublished: true }).select('slug updatedAt').lean(),
       ]);
 
       const baseUrl = config.site.url;
       const urls = [
         { url: baseUrl, changefreq: 'daily', priority: 1.0 },
         { url: `${baseUrl}/catalog`, changefreq: 'daily', priority: 0.9 },
-        { url: `${baseUrl}/lookbooks`, changefreq: 'weekly', priority: 0.8 },
         { url: `${baseUrl}/categories`, changefreq: 'weekly', priority: 0.7 },
-        { url: `${baseUrl}/about`, changefreq: 'monthly', priority: 0.6 },
         { url: `${baseUrl}/contact`, changefreq: 'monthly', priority: 0.6 },
         { url: `${baseUrl}/faq`, changefreq: 'monthly', priority: 0.5 },
         { url: `${baseUrl}/size-guide`, changefreq: 'monthly', priority: 0.5 },
@@ -194,10 +157,6 @@ class PageController {
 
       categories.forEach(c => {
         urls.push({ url: `${baseUrl}/category/${c.slug}`, changefreq: 'weekly', priority: 0.7, lastmod: c.updatedAt });
-      });
-
-      lookbooks.forEach(l => {
-        urls.push({ url: `${baseUrl}/lookbook/${l.slug}`, changefreq: 'monthly', priority: 0.6, lastmod: l.updatedAt });
       });
 
       res.set('Content-Type', 'application/xml');

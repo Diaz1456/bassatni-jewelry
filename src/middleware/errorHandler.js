@@ -76,15 +76,23 @@ const sendErrorProd = (err, req, res) => {
   });
 };
 
+const UPLOAD_ERROR_MESSAGES = {
+  LIMIT_FILE_SIZE: 'File is too large. Maximum allowed size is 10MB per image.',
+  LIMIT_FILE_COUNT: 'Too many files uploaded. Allowed up to 10 files per request.',
+  LIMIT_FIELD_KEY: 'The form contains too many fields.',
+  LIMIT_FIELD_VALUE: 'A form field value is too large.',
+  LIMIT_FIELD_COUNT: 'The form contains too many fields.',
+  LIMIT_PART_COUNT: 'The form contains too many parts (fields and files). Try uploading fewer files at once.',
+  LIMIT_UNEXPECTED_FILE: 'The form included an unexpected file. Only expected image fields are accepted.',
+};
+
 const errorHandler = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';
 
-  const isUploadError = err instanceof multer.MulterError || (err && err.code === 'LIMIT_FILE_SIZE');
+  const isUploadError = err instanceof multer.MulterError || (err && (err.code === 'LIMIT_FILE_SIZE' || typeof err.message === 'string' && err.message.includes('image files')));
   if (isUploadError && req.session) {
-    const message = err.code === 'LIMIT_FILE_SIZE'
-      ? 'File is too large. Maximum allowed size is 6MB per image.'
-      : `Upload failed: ${err.field ? `${err.field} - ` : ''}${err.message}`;
+    const message = UPLOAD_ERROR_MESSAGES[err.code] || `Upload failed: ${err.field ? `${err.field} - ` : ''}${err.message}`;
     if (req.flash) req.flash('error', message);
     const referer = req.get('Referer') || (req.originalUrl.includes('/admin') ? '/admin/products' : '/');
     return res.redirect(referer);

@@ -75,10 +75,18 @@ const productUpload = multer({
   limits: { fileSize: 6 * 1024 * 1024, files: 8 },
 });
 
+// The settings form can upload up to three files named `logo`, `heroImage`
+// and `favicon` in a single request. `files` must be >= 3 or Multer aborts the
+// whole form with LIMIT_FILE_COUNT ("Too many files") before saving anything.
 const settingsUpload = multer({
   storage: makeStorage('settings'),
   fileFilter: imageFileFilter,
-  limits: { fileSize: 6 * 1024 * 1024, files: 2 },
+  limits: {
+    fileSize: 10 * 1024 * 1024,
+    files: 10,
+    fields: 20,
+    parts: 30,
+  },
 });
 
 const categoryUpload = multer({

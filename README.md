@@ -5,11 +5,11 @@ A complete, production-ready jewelry store built with **Node.js + Express + Mong
 ## Features
 
 ### Public Storefront
+- **Shop-first homepage**: the root URL `/` renders the catalog directly (with an elegant CSS/vanilla-JS entrance animation), so visitors land straight in the store
 - **Catalog & Search**: filterable catalog (type, metal, gemstone, price, occasion), typo-tolerant search with autocomplete
 - **Product Detail**: multi-image gallery, material/gemstone specs, measurements, care instructions, related products
-- **Sections**: New Arrivals, Best Sellers, Featured, lookbooks/style galleries
 - **Cart & Wishlist**: client-side cart and wishlist pages (localStorage) with quantity editing, persistence across sessions, and demo checkout
-- **Static pages**: About, Contact (validated form + Google Maps embed), FAQ, **Ring Size Guide**
+- **Static pages**: Contact (validated form + Google Maps embed), FAQ, **Ring Size Guide**
 - **Newsletter signup**, SEO (per-page meta, Open Graph, Twitter cards, JSON-LD Product schema, sitemap + robots.txt)
 - **CSRF protection**: lightweight session-token middleware applied to all public and admin state-changing forms (login, contact, newsletter, settings, product/category/media management, logout)
 
@@ -18,6 +18,7 @@ A complete, production-ready jewelry store built with **Node.js + Express + Mong
 - **Dashboard**: active/inactive/trashed product counts, low-stock & out-of-stock alerts, best sellers, recent products, quick links
 - **Product CRUD**: create, edit, **soft-delete to trash with restore + permanent purge**, bulk activate/hide/trash; live-status badges; 8 sort orders; category/status/KW filters sharing shareable filter URLs
 - **Photo uploads**: Multer multi-image upload (up to 8 × 6MB) with **live client-side previews**; remove existing images on edit (files deleted from storage)
+- **Site settings images**: logo, favicon, and hero can be replaced together in one form — Multer limits are `10MB` per file and up to `10` files per request, so uploading all three at once no longer trips `LIMIT_FILE_COUNT`
 - **Persistent images via Cloudinary**: uploads go to Cloudinary (CDN URLs stored in MongoDB) when `CLOUDINARY_CLOUD_NAME/API_KEY/API_SECRET` are set; otherwise they gracefully fall back to local `uploads/` disk storage
 - **Admin change password**: signed-in admins can update their password from a dedicated `/admin/change-password` page (current password verified, min 8 chars)
 - **Category CMS**: create, edit, delete top-level categories with images and display order (deletion blocked while products reference them); drives nav/footer/homepage/filters
@@ -103,7 +104,7 @@ This creates:
 
 - **4 categories** — Rings, Necklaces, Earrings, Bracelets
 - **12 products** — realistic sample jewelry with descriptions, prices, gemstone/measurement specs, images, SEO
-- **3 lookbooks** — Bridal 2026, Minimalist Modern, Summer Radiance
+- **3 lookbooks** — Bridal 2026, Minimalist Modern, Summer Radiance (still seeded into the DB for API use; the public `/lookbooks` pages were removed with the nav simplification)
 - **1 admin user** — `admin@jewelrystore.com` / `admin123` (see "Default Admin Credentials")
 - **Default site settings** — shop name "Elegance Jewelry", tagline, hero, contact info
 
@@ -219,7 +220,9 @@ Run it locally against your Atlas URI, or as a Render One-off Job after the serv
 
 ## Routes
 
-Public: `/` (home), `/catalog`, `/product/:slug`, `/category/:slug`, `/categories`, `/lookbooks`, `/lookbook/:slug`, `/about`, `/contact`, `/faq`, `/sitemap.xml`, `/robots.txt`, `/health`.
+Public: `/` (shop — catalog rendered directly), `/shop` (alias), `/catalog`, `/catalog/new-arrivals`, `/catalog/best-sellers`, `/product/:slug`, `/category/:slug`, `/categories`, `/cart`, `/wishlist`, `/contact`, `/faq`, `/size-guide`, `/sitemap.xml`, `/robots.txt`, `/health`.
+
+The previous homepage, About, and Lookbook pages were removed with the nav simplification — the public pages no longer link to them. The files deleted are `views/index.ejs`, `views/about.ejs`, `views/lookbooks/`, and `src/controllers/lookbookController.js`.
 
 API: `/api/products`, `/api/products/:slug`, `/api/products/search/autocomplete`, `/api/categories`, `/api/lookbooks` (see existing routes for query params).
 

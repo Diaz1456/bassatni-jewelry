@@ -1,4 +1,4 @@
-<% const shopActive = currentPath === '/catalog' || currentPath.startsWith('/catalog/') || currentPath.startsWith('/product') || currentPath.startsWith('/category') || currentPath === '/categories'; %>
+<% const shopActive = currentPath === '/' || currentPath === '/shop' || currentPath === '/catalog' || currentPath.startsWith('/catalog/') || currentPath.startsWith('/product') || currentPath.startsWith('/category') || currentPath === '/categories'; %>
 <header class="site-header" role="banner">
   <div class="header-top">
     <div class="container">
@@ -32,15 +32,7 @@
       <nav id="main-nav" class="main-nav" role="navigation" aria-label="Main navigation">
         <ul class="nav-list">
           <li class="nav-item">
-            <a href="/catalog" class="nav-link <%= shopActive ? 'is-active' : '' %>">Shop</a>
-          </li>
-
-          <li class="nav-item">
-            <a href="/lookbooks" class="nav-link <%= currentPath === '/lookbooks' || currentPath.startsWith('/lookbook') ? 'is-active' : '' %>">Collections</a>
-          </li>
-
-          <li class="nav-item">
-            <a href="/about" class="nav-link <%= currentPath === '/about' ? 'is-active' : '' %>">About</a>
+            <a href="/" class="nav-link <%= shopActive ? 'is-active' : '' %>">Shop</a>
           </li>
 
           <li class="nav-item">

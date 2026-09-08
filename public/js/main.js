@@ -4,6 +4,20 @@
   const config = window.SITE_CONFIG || {};
   const body = document.body;
 
+  /* ===== Shop entrance loader cleanup (root catalog page) =====
+     The overlay hides itself via CSS keyframes; this just removes the node
+     from the DOM once the animation is over so it can never sit on top of
+     anything later. */
+  const shopLoader = document.querySelector('#shop-loader');
+  if (shopLoader) {
+    const removeLoader = () => {
+      shopLoader.remove();
+      window.removeEventListener('load', removeLoader);
+    };
+    window.addEventListener('load', removeLoader);
+    setTimeout(removeLoader, 1600);
+  }
+
   /* ===== Sticky header: shadow once scrolled ===== */
   const siteHeader = document.querySelector('.site-header');
   if (siteHeader) {

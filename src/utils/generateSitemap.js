@@ -1,21 +1,18 @@
-const { Product, Category, Lookbook } = require('../models');
+const { Product, Category } = require('../models');
 const config = require('../config');
 
 const generateSitemap = async () => {
   try {
-    const [products, categories, lookbooks] = await Promise.all([
+    const [products, categories] = await Promise.all([
       Product.find({ isActive: true }).select('slug updatedAt').lean(),
       Category.find({ isActive: true }).select('slug updatedAt').lean(),
-      Lookbook.find({ isPublished: true }).select('slug updatedAt').lean(),
     ]);
 
     const baseUrl = config.site.url;
     const urls = [
       { url: baseUrl, changefreq: 'daily', priority: 1.0, lastmod: new Date() },
       { url: `${baseUrl}/catalog`, changefreq: 'daily', priority: 0.9, lastmod: new Date() },
-      { url: `${baseUrl}/lookbooks`, changefreq: 'weekly', priority: 0.8, lastmod: new Date() },
       { url: `${baseUrl}/categories`, changefreq: 'weekly', priority: 0.7, lastmod: new Date() },
-      { url: `${baseUrl}/about`, changefreq: 'monthly', priority: 0.6, lastmod: new Date() },
       { url: `${baseUrl}/contact`, changefreq: 'monthly', priority: 0.6, lastmod: new Date() },
       { url: `${baseUrl}/faq`, changefreq: 'monthly', priority: 0.5, lastmod: new Date() },
     ];
@@ -26,10 +23,6 @@ const generateSitemap = async () => {
 
     categories.forEach(c => {
       urls.push({ url: `${baseUrl}/category/${c.slug}`, changefreq: 'weekly', priority: 0.7, lastmod: c.updatedAt });
-    });
-
-    lookbooks.forEach(l => {
-      urls.push({ url: `${baseUrl}/lookbook/${l.slug}`, changefreq: 'monthly', priority: 0.6, lastmod: l.updatedAt });
     });
 
     let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
