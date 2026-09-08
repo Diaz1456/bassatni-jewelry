@@ -4,14 +4,7 @@
       <div class="footer-grid">
         <div class="footer-column footer-brand">
           <a href="/" class="footer-logo" aria-label="<%= config.name %> - Home">
-            <% if (settings && settings.logo && settings.logo.url) { %>
-              <img class="footer-logo-img" src="<%= settings.logo.url %>" alt="<%= settings.logo.alt || config.name %>" height="36">
-            <% } else { %>
-              <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-              </svg>
-              <span><%= config.name %></span>
-            <% } %>
+            <span class="logo-text footer-shop-name"><%= config.name %></span>
           </a>
           <p class="footer-tagline"><%= settings && settings.footerText ? settings.footerText : (settings && settings.tagline ? settings.tagline : config.description) %></p>
 

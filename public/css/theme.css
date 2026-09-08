@@ -181,11 +181,8 @@ body::-webkit-scrollbar-thumb {
   font-size: clamp(1.5rem, 2.6vw, 2rem);
   font-weight: 800;
 }
-.logo-img,
-.footer-logo-img {
-  display: block;
-  max-height: 44px;
-  width: auto;
+.footer-logo .logo-text {
+  font-size: 1.25rem;
 }
 .header-icon {
   color: var(--color-text);
