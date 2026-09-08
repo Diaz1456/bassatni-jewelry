@@ -1,5 +1,5 @@
 const { Category, Product } = require('../models');
-const { toPublicUrl, filePathFromPublicUrl, safeUnlink } = require('../middleware/upload');
+const { toPublicUrl, destroyUploaded, removeUploadedFile } = require('../middleware/upload');
 
 function validateCategory(body) {
   const errors = {};
@@ -62,7 +62,7 @@ const createCategory = async (req, res, next) => {
     const errors = validateCategory({ name: form.name, slug: form.slug });
 
     if (Object.keys(errors).length > 0) {
-      if (req.file) safeUnlink(req.file.path);
+      if (req.file) await removeUploadedFile(req.file);
       return res.status(400).render('admin/category-form', {
         title: 'Add Category',
         category: null,
@@ -73,7 +73,7 @@ const createCategory = async (req, res, next) => {
 
     const slugExists = await Category.findOne({ slug: form.slug });
     if (slugExists) {
-      if (req.file) safeUnlink(req.file.path);
+      if (req.file) await removeUploadedFile(req.file);
       return res.status(400).render('admin/category-form', {
         title: 'Add Category',
         category: null,
@@ -94,7 +94,7 @@ const createCategory = async (req, res, next) => {
     req.flash('success', `Category "${category.name}" added successfully.`);
     return res.redirect('/admin/categories');
   } catch (error) {
-    if (req.file) safeUnlink(req.file.path);
+    if (req.file) await removeUploadedFile(req.file);
     return next(error);
   }
 };
@@ -142,7 +142,7 @@ const updateCategory = async (req, res, next) => {
     const errors = validateCategory(form);
 
     if (Object.keys(errors).length > 0) {
-      if (req.file) safeUnlink(req.file.path);
+      if (req.file) await removeUploadedFile(req.file);
       return res.status(400).render('admin/category-form', {
         title: `Edit: ${category.name}`,
         category,
@@ -153,7 +153,7 @@ const updateCategory = async (req, res, next) => {
 
     const slugExists = await Category.findOne({ slug: form.slug, _id: { $ne: category._id } });
     if (slugExists) {
-      if (req.file) safeUnlink(req.file.path);
+      if (req.file) await removeUploadedFile(req.file);
       return res.status(400).render('admin/category-form', {
         title: `Edit: ${category.name}`,
         category,
@@ -164,8 +164,7 @@ const updateCategory = async (req, res, next) => {
 
     Object.assign(category, form);
     if (req.file) {
-      const oldImage = category.image && category.image.url ? filePathFromPublicUrl(category.image.url) : null;
-      if (oldImage) safeUnlink(oldImage);
+      await destroyUploaded(category.image && category.image.url);
       category.image.url = toPublicUrl(req.file.path);
       category.image.alt = `${form.name} category image`;
     }
@@ -174,7 +173,7 @@ const updateCategory = async (req, res, next) => {
     req.flash('success', `Category "${category.name}" updated.`);
     return res.redirect('/admin/categories');
   } catch (error) {
-    if (req.file) safeUnlink(req.file.path);
+    if (req.file) await removeUploadedFile(req.file);
     return next(error);
   }
 };
@@ -193,10 +192,7 @@ const deleteCategory = async (req, res, next) => {
       return res.redirect('/admin/categories');
     }
 
-    if (category.image && category.image.url) {
-      const file = filePathFromPublicUrl(category.image.url);
-      if (file) safeUnlink(file);
-    }
+    await destroyUploaded(category.image && category.image.url);
     await category.deleteOne();
     req.flash('success', `Category "${category.name}" deleted.`);
     return res.redirect('/admin/categories');

@@ -68,24 +68,9 @@
           <h4>Customer Care</h4>
           <ul class="footer-links">
             <li><a href="/contact">Contact Us</a></li>
-            <li><a href="/faq">FAQs</a></li>
-            <li><a href="/size-guide">Size Guide</a></li>
             <li><a href="/about">Our Story</a></li>
-            <li><a href="/wishlist">My Wishlist</a></li>
             <li><a href="/cart">Shopping Cart</a></li>
           </ul>
-        </div>
-
-        <div class="footer-column footer-newsletter">
-          <h4>Join Our Circle</h4>
-          <p>Subscribe for exclusive access to new collections, private sales, and styling inspiration.</p>
-          <form class="newsletter-form" action="/newsletter/subscribe" method="POST" aria-label="Newsletter signup">
-            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-            <label for="newsletter-email" class="visually-hidden">Email address</label>
-            <input type="email" id="newsletter-email" name="email" class="newsletter-input" placeholder="Enter your email" required autocomplete="email" aria-describedby="newsletter-note">
-            <button type="submit" class="btn btn-primary newsletter-btn">Subscribe</button>
-            <p id="newsletter-note" class="newsletter-note">We respect your privacy. Unsubscribe anytime.</p>
-          </form>
         </div>
       </div>
     </div>
@@ -125,26 +110,22 @@
   </div>
   <nav class="mobile-nav" role="navigation" aria-label="Mobile navigation">
     <ul class="mobile-nav-list">
-      <li class="mobile-nav-item has-submenu">
-        <button class="mobile-nav-link submenu-toggle" aria-expanded="false" aria-haspopup="true">Shop</button>
-        <ul class="mobile-submenu" role="menu" aria-label="Shop">
-          <% categories?.forEach(cat => { %>
-            <li><a href="/category/<%= cat.slug %>" role="menuitem"><%= cat.name %></a></li>
-          <% }) %>
-          <li><a href="/catalog/new-arrivals" role="menuitem">New Arrivals</a></li>
-          <li><a href="/catalog/best-sellers" role="menuitem">Best Sellers</a></li>
-          <li><a href="/lookbooks" role="menuitem">Lookbooks</a></li>
-        </ul>
-      </li>
-      <li class="mobile-nav-item"><a href="/" class="mobile-nav-link">Home</a></li>
-      <li class="mobile-nav-item"><a href="/catalog" class="mobile-nav-link">All Jewelry</a></li>
-      <li class="mobile-nav-item"><a href="/categories" class="mobile-nav-link">Categories</a></li>
+      <li class="mobile-nav-item"><a href="/catalog" class="mobile-nav-link">Shop</a></li>
+      <li class="mobile-nav-item"><a href="/lookbooks" class="mobile-nav-link">Collections</a></li>
       <li class="mobile-nav-item"><a href="/about" class="mobile-nav-link">About Us</a></li>
       <li class="mobile-nav-item"><a href="/contact" class="mobile-nav-link">Contact</a></li>
-      <li class="mobile-nav-item"><a href="/size-guide" class="mobile-nav-link">Size Guide</a></li>
-      <li class="mobile-nav-item"><a href="/wishlist" class="mobile-nav-link">My Wishlist</a></li>
       <li class="mobile-nav-item"><a href="/cart" class="mobile-nav-link">Shopping Cart</a></li>
-      <li class="mobile-nav-item"><a href="/admin" class="mobile-nav-link">Admin Login</a></li>
+      <% if (isAdminLoggedIn) { %>
+        <li class="mobile-nav-item"><a href="/admin" class="mobile-nav-link">Dashboard</a></li>
+        <li class="mobile-nav-item">
+          <form method="post" action="/admin/logout" class="mobile-nav-logout-form">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <button type="submit" class="mobile-nav-link">Logout</button>
+          </form>
+        </li>
+      <% } else { %>
+        <li class="mobile-nav-item"><a href="/admin" class="mobile-nav-link">Admin Login</a></li>
+      <% } %>
     </ul>
   </nav>
 </div>

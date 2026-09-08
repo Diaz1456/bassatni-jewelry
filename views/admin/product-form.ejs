@@ -199,7 +199,7 @@
         <label for="images">Upload images (up to 8; JPEG, PNG, WebP, GIF, SVG, AVIF — 6MB max each)</label>
         <input id="images" name="images" type="file" accept="image/*" multiple data-admin-image-upload="imagePreviews" data-admin-image-note="imageNote">
         <ul class="admin-image-previews" id="imagePreviews"></ul>
-        <p class="admin-note" id="imageNote">The first image becomes the main product photo. Uploaded images appear here before saving.</p>
+        <p class="admin-note" id="imageNote">The first image becomes the main product photo. Uploaded images are stored on Cloudinary when configured, otherwise on local disk — both persist for the life of the product.</p>
       </div>
 
       <% if (product && product.images && product.images.length) { %>

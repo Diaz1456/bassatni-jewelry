@@ -1,3 +1,4 @@
+<% const shopActive = currentPath === '/catalog' || currentPath.startsWith('/catalog/') || currentPath.startsWith('/product') || currentPath.startsWith('/category') || currentPath === '/categories'; %>
 <header class="site-header" role="banner">
   <div class="header-top">
     <div class="container">
@@ -31,81 +32,40 @@
       <nav id="main-nav" class="main-nav" role="navigation" aria-label="Main navigation">
         <ul class="nav-list">
           <li class="nav-item">
-            <a href="/" class="nav-link <%= currentPath === '/' ? 'is-active' : '' %>">Home</a>
-          </li>
-
-          <li class="nav-item has-dropdown">
-            <a href="/catalog" class="nav-link" aria-haspopup="true" aria-expanded="false">Shop</a>
-            <div class="dropdown-menu" role="menu" aria-label="Shop">
-              <div class="dropdown-grid">
-                <div class="dropdown-column">
-                  <h4>Shop by Category</h4>
-                  <ul role="none">
-                    <% categories?.forEach(cat => { %>
-                      <li><a href="/category/<%= cat.slug %>" role="menuitem"><%= cat.name %></a></li>
-                    <% }) %>
-                  </ul>
-                </div>
-                <div class="dropdown-column">
-                  <h4>Collections</h4>
-                  <ul role="none">
-                    <li><a href="/catalog/new-arrivals" role="menuitem">New Arrivals</a></li>
-                    <li><a href="/catalog/best-sellers" role="menuitem">Best Sellers</a></li>
-                    <li><a href="/catalog?isFeatured=true" role="menuitem">Featured</a></li>
-                    <li><a href="/lookbooks" role="menuitem">Lookbooks</a></li>
-                  </ul>
-                </div>
-                <div class="dropdown-column">
-                  <h4>Shop by Occasion</h4>
-                  <ul role="none">
-                    <li><a href="/catalog?occasion=engagement" role="menuitem">Engagement</a></li>
-                    <li><a href="/catalog?occasion=wedding" role="menuitem">Wedding Bands</a></li>
-                    <li><a href="/catalog?occasion=anniversary" role="menuitem">Anniversary</a></li>
-                    <li><a href="/catalog?occasion=everyday" role="menuitem">Everyday</a></li>
-                  </ul>
-                </div>
-              </div>
-            </div>
+            <a href="/catalog" class="nav-link <%= shopActive ? 'is-active' : '' %>">Shop</a>
           </li>
 
           <li class="nav-item">
-            <a href="/catalog" class="nav-link">All Jewelry</a>
+            <a href="/lookbooks" class="nav-link <%= currentPath === '/lookbooks' || currentPath.startsWith('/lookbook') ? 'is-active' : '' %>">Collections</a>
           </li>
 
           <li class="nav-item">
-            <a href="/lookbooks" class="nav-link">Lookbooks</a>
+            <a href="/about" class="nav-link <%= currentPath === '/about' ? 'is-active' : '' %>">About</a>
           </li>
 
           <li class="nav-item">
-            <a href="/about" class="nav-link">About</a>
+            <a href="/contact" class="nav-link <%= currentPath === '/contact' ? 'is-active' : '' %>">Contact</a>
           </li>
 
-          <li class="nav-item">
-            <a href="/contact" class="nav-link">Contact</a>
-          </li>
+          <% if (isAdminLoggedIn) { %>
+            <li class="nav-item">
+              <a href="/admin" class="nav-link">Dashboard</a>
+            </li>
+            <li class="nav-item">
+              <form method="post" action="/admin/logout" class="nav-logout-form">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <button type="submit" class="nav-link nav-link--btn" aria-label="Log out of admin">Logout</button>
+              </form>
+            </li>
+          <% } else { %>
+            <li class="nav-item">
+              <a href="/admin" class="nav-link nav-link--admin">Admin Login</a>
+            </li>
+          <% } %>
         </ul>
       </nav>
 
       <div class="header-right">
-        <div class="search-wrapper" role="search">
-          <label for="site-search" class="visually-hidden">Search products</label>
-          <input type="search" id="site-search" class="search-input" placeholder="Search jewelry..." aria-autocomplete="list" aria-controls="search-results" autocomplete="off">
-          <div id="search-results" class="search-results" role="listbox" aria-label="Search suggestions"></div>
-          <button type="submit" class="search-btn" aria-label="Search">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-              <circle cx="11" cy="11" r="8"/>
-              <path d="M21 21l-4.35-4.35"/>
-            </svg>
-          </button>
-        </div>
-
-        <a href="/wishlist" class="header-icon wishlist-link" aria-label="Wishlist (0 items)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-          </svg>
-          <span class="wishlist-count" aria-live="polite">0</span>
-        </a>
-
         <a href="/cart" class="header-icon cart-link" aria-label="Shopping cart (0 items)">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
             <circle cx="9" cy="21" r="1"/>
@@ -113,13 +73,6 @@
             <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
           </svg>
           <span class="cart-count" aria-live="polite">0</span>
-        </a>
-
-        <a href="/admin" class="header-icon admin-link" aria-label="Admin login">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-          </svg>
         </a>
       </div>
     </div>

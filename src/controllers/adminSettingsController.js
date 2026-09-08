@@ -1,5 +1,5 @@
 const { Settings } = require('../models');
-const { toPublicUrl, filePathFromPublicUrl, safeUnlink } = require('../middleware/upload');
+const { toPublicUrl, destroyUploaded, removeUploadedFile } = require('../middleware/upload');
 const { invalidateSettingsCache } = require('../utils/settingsCache');
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -90,7 +90,7 @@ const updateSettings = async (req, res, next) => {
         ...(req.files && req.files.heroImage || []),
         ...(req.files && req.files.favicon || []),
       ];
-      uploaded.forEach(file => safeUnlink(file.path));
+      await Promise.all(uploaded.map(removeUploadedFile));
       return res.status(400).render('admin/settings', {
         title: 'Site Settings',
         settings: formDataFromBody(req.body, current),
@@ -131,21 +131,18 @@ const updateSettings = async (req, res, next) => {
     });
 
     if (req.files && req.files.logo && req.files.logo[0]) {
-      const oldLogo = settings.logo.url ? filePathFromPublicUrl(settings.logo.url) : null;
-      if (oldLogo) safeUnlink(oldLogo);
+      await destroyUploaded(settings.logo.url);
       settings.logo.url = toPublicUrl(req.files.logo[0].path);
       settings.logo.alt = `${settings.shopName} logo`;
     }
 
     if (req.files && req.files.heroImage && req.files.heroImage[0]) {
-      const oldHero = settings.hero.image ? filePathFromPublicUrl(settings.hero.image) : null;
-      if (oldHero) safeUnlink(oldHero);
+      await destroyUploaded(settings.hero.image);
       settings.hero.image = toPublicUrl(req.files.heroImage[0].path);
     }
 
     if (req.files && req.files.favicon && req.files.favicon[0]) {
-      const oldFavicon = settings.favicon.url ? filePathFromPublicUrl(settings.favicon.url) : null;
-      if (oldFavicon) safeUnlink(oldFavicon);
+      await destroyUploaded(settings.favicon.url);
       settings.favicon.url = toPublicUrl(req.files.favicon[0].path);
       settings.favicon.alt = `${settings.shopName} favicon`;
     }
@@ -163,7 +160,7 @@ const updateSettings = async (req, res, next) => {
         ...(req.files.heroImage || []),
         ...(req.files.favicon || []),
       ];
-      files.forEach(file => safeUnlink(file.path));
+      await Promise.all(files.map(removeUploadedFile));
     }
     return next(error);
   }

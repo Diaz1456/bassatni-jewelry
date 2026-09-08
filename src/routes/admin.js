@@ -35,6 +35,10 @@ router.post('/logout', requireAdmin, csrfProtect, adminController.postLogout);
 router.get('/dashboard', requireAdmin, adminController.getDashboard);
 router.get('/', requireAdmin, adminController.getDashboard);
 
+// Change password (requires an active admin session)
+router.get('/change-password', requireAdmin, adminController.getChangePassword);
+router.post('/change-password', requireAdmin, csrfProtect, adminController.postChangePassword);
+
 // Products
 router.get('/products', requireAdmin, adminProductController.getProducts);
 router.get('/products/new', requireAdmin, adminProductController.getNewProduct);

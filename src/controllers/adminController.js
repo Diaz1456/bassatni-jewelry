@@ -97,9 +97,69 @@ const getDashboard = async (req, res, next) => {
   }
 };
 
+const MIN_PASSWORD_LENGTH = 8;
+
+const getChangePassword = (req, res) => {
+  res.render('admin/change-password', {
+    title: 'Change Password',
+    errors: {},
+    form: {},
+  });
+};
+
+const postChangePassword = async (req, res, next) => {
+  try {
+    const { currentPassword, newPassword, confirmPassword } = req.body;
+    const errors = {};
+    const form = {};
+
+    const admin = await Admin.findById(req.session.adminId).select('+passwordHash');
+    if (!admin) {
+      req.session.destroy(() => {});
+      res.clearCookie('sid', { path: '/' });
+      req.flash('error', 'Your session has expired. Please sign in again.');
+      return res.redirect('/admin/login');
+    }
+
+    const currentIsValid = await admin.comparePassword(currentPassword || '');
+    if (!currentIsValid) {
+      errors.currentPassword = 'Current password is incorrect.';
+    }
+    if (!newPassword || newPassword.length < MIN_PASSWORD_LENGTH) {
+      errors.newPassword = `New password must be at least ${MIN_PASSWORD_LENGTH} characters.`;
+    } else {
+      const sameAsCurrent = admin.passwordHash && await admin.comparePassword(newPassword);
+      if (sameAsCurrent) {
+        errors.newPassword = 'New password must be different from your current password.';
+      }
+    }
+    if (newPassword !== confirmPassword) {
+      errors.confirmPassword = 'Passwords do not match.';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      return res.status(400).render('admin/change-password', {
+        title: 'Change Password',
+        errors,
+        form,
+      });
+    }
+
+    admin.passwordHash = await Admin.hashPassword(newPassword);
+    await admin.save();
+
+    req.flash('success', 'Password changed successfully.');
+    return res.redirect('/admin');
+  } catch (error) {
+    return next(error);
+  }
+};
+
 module.exports = {
   getLogin,
   postLogin,
   postLogout,
   getDashboard,
+  getChangePassword,
+  postChangePassword,
 };

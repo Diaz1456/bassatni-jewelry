@@ -1,5 +1,5 @@
 const { Product, Category } = require('../models');
-const { toPublicUrl, filePathFromPublicUrl, safeUnlink } = require('../middleware/upload');
+const { toPublicUrl, destroyUploaded, removeUploadedFile } = require('../middleware/upload');
 
 const GEMSTONES = ['diamond', 'sapphire', 'ruby', 'emerald', 'pearl', 'opal', 'amethyst', 'topaz', 'aquamarine', 'garnet', 'peridot', 'citrine', 'tourmaline', 'tanzanite', 'moissanite', 'lab-diamond', 'none'];
 const METALS = ['gold', 'white-gold', 'rose-gold', 'silver', 'platinum', 'palladium', 'titanium', 'stainless-steel'];
@@ -62,20 +62,21 @@ function buildImagesFromFiles(files, productName, existingImages = []) {
   return images;
 }
 
-function removeMarkedImages(existingImages, removeIndexes) {
+async function removeMarkedImages(existingImages, removeIndexes) {
   const list = Array.isArray(removeIndexes)
     ? removeIndexes
     : (removeIndexes ? [removeIndexes] : []);
   const toRemove = new Set(list.map(i => parseInt(i, 10)).filter(i => Number.isInteger(i)));
   const kept = [];
+  const removals = [];
   existingImages.forEach((img, idx) => {
     if (toRemove.has(idx)) {
-      const file = filePathFromPublicUrl(img.url);
-      if (file) safeUnlink(file);
+      removals.push(destroyUploaded(img.url));
     } else {
       kept.push(img);
     }
   });
+  await Promise.all(removals);
   return kept;
 }
 
@@ -280,7 +281,7 @@ const createProduct = async (req, res, next) => {
     req.flash('success', `Product "${product.name}" added successfully.`);
     return res.redirect('/admin/products');
   } catch (error) {
-    (req.files || []).forEach(file => safeUnlink(file.path));
+    await Promise.all((req.files || []).map(removeUploadedFile));
     if (error.code === 11000) {
       req.flash('error', 'A product with this name or SKU already exists. Choose a unique SKU or name.');
       return res.redirect('/admin/products/new');
@@ -385,7 +386,7 @@ const updateProduct = async (req, res, next) => {
     }
 
     const existing = product.images || [];
-    const keptExisting = removeMarkedImages(existing, req.body.removeImages);
+    const keptExisting = await removeMarkedImages(existing, req.body.removeImages);
     const images = buildImagesFromFiles(req.files || [], data.name, keptExisting);
 
     Object.assign(product, data, { images });
@@ -396,7 +397,7 @@ const updateProduct = async (req, res, next) => {
     req.flash('success', `Product "${product.name}" updated successfully.`);
     return res.redirect('/admin/products');
   } catch (error) {
-    (req.files || []).forEach(file => safeUnlink(file.path));
+    await Promise.all((req.files || []).map(removeUploadedFile));
     if (error.code === 11000) {
       req.flash('error', 'A product with this name or SKU already exists. Choose a unique SKU or name.');
       return res.redirect(`/admin/products/${req.params.id}/edit`);
@@ -456,10 +457,7 @@ const purgeProduct = async (req, res, next) => {
       return res.redirect('/admin/products');
     }
 
-    (product.images || []).forEach((img) => {
-      const file = filePathFromPublicUrl(img.url);
-      if (file) safeUnlink(file);
-    });
+    await Promise.all((product.images || []).map(img => destroyUploaded(img.url)));
 
     await product.deleteOne();
     req.flash('success', `Product "${product.name}" permanently deleted.`);

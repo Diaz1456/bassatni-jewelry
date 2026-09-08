@@ -1,6 +1,9 @@
 const path = require('path');
 const fs = require('fs');
 const multer = require('multer');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const { cloudinary, isCloudinaryConfigured, CLOUDINARY_FOLDER } = require('../config/cloudinary');
+const config = require('../config');
 
 const UPLOADS_ROOT = path.join(__dirname, '..', '..', 'uploads');
 
@@ -14,6 +17,21 @@ ensureDir(path.join(UPLOADS_ROOT, 'settings'));
 ensureDir(path.join(UPLOADS_ROOT, 'categories'));
 
 function makeStorage(folder) {
+  // Cloudinary: store every upload under a per-type folder on the CDN. The
+  // multer `file.path` then holds the https URL persisted to MongoDB.
+  if (isCloudinaryConfigured) {
+    return new CloudinaryStorage({
+      cloudinary,
+      params: {
+        folder: `${CLOUDINARY_FOLDER}/${folder}`.replace(/\/$/, ''),
+        resource_type: 'image',
+        allowed_formats: ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg', 'avif'],
+        transformation: [
+          { width: config.images.maxWidth, crop: 'limit', quality: 80 },
+        ],
+      },
+    });
+  }
   return multer.diskStorage({
     destination(req, file, cb) {
       const dir = path.join(UPLOADS_ROOT, folder);
@@ -77,9 +95,10 @@ function isUploadedImage(filepath) {
 
 function toPublicUrl(filepath) {
   if (!filepath) return '';
-  // Absolute URLs and already-public paths pass through unchanged. Local disk
-  // paths are relativized against the uploads root so the browser fetches them
-  // via the /uploads static route rather than the private filesystem.
+  // Absolute URLs (Cloudinary CDN) and already-public paths pass through
+  // unchanged. Local disk paths are relativized against the uploads root so the
+  // browser fetches them via the /uploads static route rather than the private
+  // filesystem.
   if (/^https?:\/\//.test(filepath) || filepath.startsWith('/uploads/') || filepath.startsWith('/images/')) {
     return filepath;
   }
@@ -106,6 +125,53 @@ function safeUnlink(filepath) {
   }
 }
 
+function isCloudinaryUrl(url) {
+  return typeof url === 'string' && /^https?:\/\/(res\.)?cloudinary\.com\//.test(url);
+}
+
+// Extract the public_id from a Cloudinary URL so the asset can be destroyed.
+// Example: https://res.cloudinary.com/<cloud>/image/upload/v1/<folder>/<id>.jpg
+//   -> public_id "<folder>/<id>"
+function publicIdFromUrl(url) {
+  if (!isCloudinaryUrl(url)) return null;
+  const match = url.match(/\/image\/upload\/v\d+\/(.+)\.[a-z0-9]{1,8}$/i);
+  return match ? match[1] : null;
+}
+
+// Delete an image by its stored public URL: destroys the Cloudinary asset when
+// the URL points at the CDN, otherwise removes the local disk file. Safe no-op
+// for seed placeholders (`/images/...`) that are not managed uploads.
+async function destroyUploaded(url) {
+  if (!url) return;
+  const publicId = publicIdFromUrl(url);
+  if (publicId) {
+    try {
+      await cloudinary.uploader.destroy(publicId, { resource_type: 'image', invalidate: true });
+    } catch (error) {
+      console.warn('Failed to delete Cloudinary image:', publicId, error.message);
+    }
+    return;
+  }
+  safeUnlink(filePathFromPublicUrl(url));
+}
+
+// Delete a freshly-uploaded multer file (used to clean up after a failed
+// save/revalidation). Handles both Cloudinary uploads (file.filename is the
+// public_id) and disk storage (file.path is the local path).
+async function removeUploadedFile(file) {
+  if (!file) return;
+  if (file.filename && file.path && isCloudinaryUrl(file.path)) {
+    try {
+      await cloudinary.uploader.destroy(file.filename, { resource_type: 'image', invalidate: true });
+      return;
+    } catch (error) {
+      console.warn('Failed to delete Cloudinary upload:', file.path, error.message);
+      return;
+    }
+  }
+  safeUnlink(file.path);
+}
+
 module.exports = {
   UPLOADS_ROOT,
   productUpload,
@@ -115,4 +181,8 @@ module.exports = {
   isUploadedImage,
   filePathFromPublicUrl,
   safeUnlink,
+  isCloudinaryUrl,
+  publicIdFromUrl,
+  destroyUploaded,
+  removeUploadedFile,
 };

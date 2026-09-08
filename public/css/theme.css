@@ -225,6 +225,36 @@ body::-webkit-scrollbar-thumb {
   color: var(--color-gold-light);
 }
 
+/* Minimal nav extras */
+.nav-link.is-active {
+  color: var(--color-gold);
+}
+.nav-link.is-active::after {
+  width: 100%;
+}
+.nav-link--admin {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.78rem;
+  color: var(--color-gold-light);
+}
+.nav-logout-form {
+  margin: 0;
+  padding: 0;
+}
+.nav-link--btn {
+  background: none;
+  border: 0;
+  padding: var(--spacing-sm) 0;
+  font-family: var(--font-body);
+  font-weight: 500;
+  color: var(--color-text);
+  cursor: pointer;
+}
+.nav-link--btn:hover {
+  color: var(--color-gold);
+}
+
 .search-input {
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid var(--color-border);
@@ -264,6 +294,22 @@ body::-webkit-scrollbar-thumb {
   color: var(--color-gold);
 }
 .submenu-toggle::after {
+  color: var(--color-gold);
+}
+.mobile-nav-logout-form {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+.mobile-nav-logout-form .mobile-nav-link {
+  background: none;
+  border: 0;
+  border-bottom: 1px solid var(--color-border-light);
+  font-family: var(--font-body);
+  cursor: pointer;
+  color: var(--color-text);
+}
+.mobile-nav-logout-form .mobile-nav-link:hover {
   color: var(--color-gold);
 }
 

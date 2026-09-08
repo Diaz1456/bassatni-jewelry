@@ -82,6 +82,9 @@ app.use((req, res, next) => {
   res.locals.product = res.locals.product || null;
   res.locals.category = res.locals.category || null;
   res.locals.lookbook = res.locals.lookbook || null;
+  // Expose whether the visitor is an authenticated admin so the public header
+  // can swap "Admin Login" for "Dashboard / Logout".
+  res.locals.isAdminLoggedIn = Boolean(req.session && req.session.adminId);
   next();
 });
 

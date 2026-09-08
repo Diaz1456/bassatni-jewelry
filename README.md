@@ -17,9 +17,11 @@ A complete, production-ready jewelry store built with **Node.js + Express + Mong
 - **Secure login**: bcrypt-hashed password (`bcryptjs`) + signed `express-session` cookie; all `/admin/*` routes guarded by auth middleware; login rate-limited + CSRF-protected
 - **Dashboard**: active/inactive/trashed product counts, low-stock & out-of-stock alerts, best sellers, recent products, quick links
 - **Product CRUD**: create, edit, **soft-delete to trash with restore + permanent purge**, bulk activate/hide/trash; live-status badges; 8 sort orders; category/status/KW filters sharing shareable filter URLs
-- **Photo uploads**: Multer multi-image upload (up to 8 × 6MB) with **live client-side previews**; remove existing images on edit (files cleaned from disk)
+- **Photo uploads**: Multer multi-image upload (up to 8 × 6MB) with **live client-side previews**; remove existing images on edit (files deleted from storage)
+- **Persistent images via Cloudinary**: uploads go to Cloudinary (CDN URLs stored in MongoDB) when `CLOUDINARY_CLOUD_NAME/API_KEY/API_SECRET` are set; otherwise they gracefully fall back to local `uploads/` disk storage
+- **Admin change password**: signed-in admins can update their password from a dedicated `/admin/change-password` page (current password verified, min 8 chars)
 - **Category CMS**: create, edit, delete top-level categories with images and display order (deletion blocked while products reference them); drives nav/footer/homepage/filters
-- **Image Library**: browse every uploaded image (product/settings/category folders), copy public URLs, delete files safely within the uploads root
+- **Image Library**: browse every uploaded image (product/settings/category folders), copy public URLs, delete files safely — from Cloudinary or local disk, whichever is active
 - **Site settings**: shop name, logo, favicon, tagline, hero image/title/subtitle, contact info, announcement bar, Google Maps embed, footer text/copyright, social links (Instagram/Facebook/Pinterest/Twitter/YouTube), SEO defaults — stored in MongoDB and reflected across the public site instantly (cache-invalidating)
 - **Validation (client + server)**: forms validate inline before submit and are re-validated server-side (mirrored rules); SKU auto-generator and slug auto-fill helpers
 
@@ -142,6 +144,10 @@ Change them by setting `ADMIN_EMAIL` / `ADMIN_PASSWORD` / `ADMIN_NAME` in `.env`
 | `GA_MEASUREMENT_ID` | Google Analytics 4 ID (`G-XXXX`) | No |
 | `IMAGE_QUALITY` | JPEG/WebP quality 0–100 | No (default `80`) |
 | `IMAGE_MAX_WIDTH` | Max image width for optimization | No (default `1920`) |
+| `CLOUDINARY_CLOUD_NAME` | Cloudinary cloud name (enables Cloudinary storage) | No (empty → local disk) |
+| `CLOUDINARY_API_KEY` | Cloudinary API key | No (empty → local disk) |
+| `CLOUDINARY_API_SECRET` | Cloudinary API secret | No (empty → local disk) |
+| `CLOUDINARY_FOLDER` | Root folder for uploads on Cloudinary | No (default `jewelry-shop`) |
 | `RATE_LIMIT_WINDOW_MS` | Rate-limit window | No (default `900000`) |
 | `RATE_LIMIT_MAX_REQUESTS` | Max requests per window | No (default `100`) |
 | `ADMIN_EMAIL` | Initial admin email (used by seed) | No (default `admin@jewelrystore.com`) |
@@ -168,13 +174,14 @@ All forms validate **client-side** (instant inline messages) **and** server-side
 - Upload cleanup: if a create/update fails after files were written to disk, the uploaded files are unlinked so orphans never accumulate.
 - `Admin`/auth lookups handle missing sessions and deleted admins gracefully (destroy session, redirect to login).
 
-## Image Uploads & Cloudinary Note
+## Image Uploads
 
-Uploaded images are stored **locally** under `uploads/` and served from `/uploads`. MongoDB stores only the *public URL*, so swapping storage backends is a single-point change.
+Uploads are persisted **either** on Cloudinary **or** on local disk, selected automatically:
 
-- **Dev**: `uploads/` is gitignored — fine for local work.
-- **Render**: the blueprint mounts a **persistent disk** (`/opt/render/project/src/uploads`) so uploads survive restarts/redeploys. On the free tier your service can sleep; the disk persists but is single-instance.
-- **For a real production shop, move to cloud storage** — recommend **Cloudinary**: replace the multer disk handler in `src/middleware/upload.js` with calls to the Cloudinary upload API and have `toPublicUrl` return the returned secure URLs (or use MongoDB GridFS). Because only URLs are stored, the product catalog and admin code need no other changes.
+- **Cloudinary (recommended for production).** Set `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY` and `CLOUDINARY_API_SECRET` (Cloudinary dashboard → Settings → Access Keys). Images are uploaded to Cloudinary with Multer's `multer-storage-cloudinary`, and MongoDB stores the returned CDN URL. Because only URLs are stored, the product catalog, admin forms and the public site work identically for either backend. Files survive redeploys, sleep cycles and multi-instance setups, and the URL is automatically deleted from Cloudinary when the image is removed in the admin.
+- **Local disk (fallback / local dev).** Without the Cloudinary env vars, uploads land in `uploads/` (served from `/uploads`). `uploads/` is gitignored and, on Render's free tier, **does not survive redeploys** — use Cloudinary for anything permanent.
+
+The **Image Library** reflects the active backend: it lists Cloudinary resources when Cloudinary is configured, and scans `uploads/` otherwise.
 
 ## Deploy on Render
 
@@ -190,6 +197,7 @@ Uploaded images are stored **locally** under `uploads/` and served from `/upload
    - `SITE_URL=https://your-app.onrender.com`
    - `SESSION_SECRET` (blueprint auto-generates one)
    - `ADMIN_EMAIL` / `ADMIN_PASSWORD` (initial admin credentials)
+   - `CLOUDINARY_CLOUD_NAME` / `CLOUDINARY_API_KEY` / `CLOUDINARY_API_SECRET` (recommended so uploads survive redeploys)
 6. Click **Apply** and wait for the deploy.
 
 ### Option B — Manual Web Service
