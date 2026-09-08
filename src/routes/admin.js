@@ -62,7 +62,10 @@ router.post('/categories/:id/delete', requireAdmin, csrfProtect, adminCategoryCo
 router.get('/media', requireAdmin, adminMediaController.getMedia);
 router.post('/media/delete', requireAdmin, csrfProtect, adminMediaController.deleteMedia);
 
-// Settings
+// Settings — single multipart request carrying both the ~22 text/checkbox
+// fields and up to 3 images. `settingsUpload.fields([...])` parses each named
+// file list and exposes the text fields in req.body, so no separate
+// express.urlencoded() middleware is needed for this form.
 router.get('/settings', requireAdmin, adminSettingsController.getSettings);
 router.post('/settings', requireAdmin, settingsUpload.fields([
   { name: 'logo', maxCount: 1 },

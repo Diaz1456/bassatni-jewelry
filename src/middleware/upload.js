@@ -75,17 +75,27 @@ const productUpload = multer({
   limits: { fileSize: 6 * 1024 * 1024, files: 8 },
 });
 
-// The settings form can upload up to three files named `logo`, `heroImage`
-// and `favicon` in a single request. `files` must be >= 3 or Multer aborts the
-// whole form with LIMIT_FILE_COUNT ("Too many files") before saving anything.
+// The Site Settings form sends ~22 text/checkbox fields plus up to 3 file
+// fields (`logo`, `heroImage`, `favicon`) in ONE multipart request.
+//
+//   - `files`  counts only uploaded files   -> must be >= 3 (else LIMIT_FILE_COUNT)
+//   - `fields` counts only non-file fields -> must be >= 22 (else LIMIT_FIELD_COUNT
+//     "The form contains too many fields" — this was firing because the form has
+//     more inputs than the old cap of 20)
+//   - `parts`  counts every field AND file -> must be >= 25
+//
+// Rather than balancing these against today's exact field count, set generous
+// bounds (Multer's own defaults are Infinity) so the settings form can grow
+// without tripping a Multer limit again.
 const settingsUpload = multer({
   storage: makeStorage('settings'),
   fileFilter: imageFileFilter,
   limits: {
+    fields: 1000,
+    parts: 1000,
+    fieldSize: 2 * 1024 * 1024,
     fileSize: 10 * 1024 * 1024,
     files: 10,
-    fields: 20,
-    parts: 30,
   },
 });
 
