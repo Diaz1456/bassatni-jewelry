@@ -1,12 +1,5 @@
 <div class="page-header category-header" style="<%= category.image?.url ? 'background-image: url(' + category.image.url + ')' : '' %>">
   <div class="container">
-    <nav class="breadcrumb" aria-label="Breadcrumb">
-      <ol>
-        <li><a href="/">Home</a></li>
-        <li><a href="/catalog">Catalog</a></li>
-        <li aria-current="page"><%= category.name %></li>
-      </ol>
-    </nav>
     <h1 class="page-title"><%= category.name %></h1>
     <% if (category.description) { %>
       <p class="page-subtitle"><%= category.description %></p>

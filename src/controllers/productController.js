@@ -140,20 +140,12 @@ class ProductController {
         .select('name slug price compareAtPrice images isNew isBestSeller')
         .lean({ virtuals: true });
 
-      const breadcrumbs = [
-        { name: 'Home', url: '/' },
-        { name: 'Catalog', url: '/catalog' },
-        { name: product.category?.name, url: `/catalog?category=${product.category?._id}` },
-        { name: product.name, url: '' },
-      ];
-
       const structuredData = generateProductSchema(product, config.site.url);
 
       res.render('products/detail', {
         title: product.seo?.metaTitle || product.name,
         product,
         relatedProducts,
-        breadcrumbs,
         structuredData,
         analytics: config.analytics,
       });

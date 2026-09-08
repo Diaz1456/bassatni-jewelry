@@ -60,7 +60,7 @@ const settingsSchema = new mongoose.Schema({
     enabled: { type: Boolean, default: true },
     text: {
       type: String,
-      default: 'Complimentary shipping on all orders over $500 | Easy 30-day returns',
+      default: 'Complimentary shipping on all orders over $500',
     },
   },
   mapsEmbed: { type: String, default: '' },

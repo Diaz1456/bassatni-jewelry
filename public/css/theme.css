@@ -192,7 +192,8 @@ body::-webkit-scrollbar-thumb {
 .header-icon:hover {
   color: var(--color-gold);
 }
-.cart-count {
+.cart-count,
+.wishlist-count {
   background: linear-gradient(135deg, var(--color-gold), var(--color-gold-deep));
   color: #1B1B23;
   font-weight: 700;
@@ -603,7 +604,7 @@ body::-webkit-scrollbar-thumb {
   color: var(--color-gold-light);
 }
 
-/* ---------- Page headers & breadcrumbs (dark) ---------- */
+/* ---------- Page headers (dark) ---------- */
 .page-header {
   background: linear-gradient(180deg, #13131c 0%, #0F0F1A 100%);
   border-bottom: 1px solid rgba(212, 175, 55, 0.20);
@@ -613,18 +614,6 @@ body::-webkit-scrollbar-thumb {
 }
 .page-subtitle {
   color: var(--color-text-muted);
-}
-.breadcrumb a {
-  color: var(--color-text-muted);
-}
-.breadcrumb a:hover {
-  color: var(--color-gold);
-}
-.breadcrumb [aria-current="page"] {
-  color: var(--color-gold-light);
-}
-.breadcrumb li:not(:last-child)::after {
-  color: var(--color-text-soft);
 }
 
 /* ---------- Catalog filter sidebar (dark) ---------- */

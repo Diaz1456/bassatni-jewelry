@@ -51,12 +51,6 @@ class CategoryController {
 
       const totalPages = Math.ceil(total / options.limit);
 
-      const breadcrumbs = [
-        { name: 'Home', url: '/' },
-        { name: 'Catalog', url: '/catalog' },
-        { name: category.name, url: '' },
-      ];
-
       if (req.xhr || req.headers.accept?.includes('application/json')) {
         return res.json({
           products,
@@ -87,7 +81,6 @@ class CategoryController {
         },
         filters: req.query,
         filterOptions,
-        breadcrumbs,
         analytics: config.analytics,
       });
     } catch (error) {

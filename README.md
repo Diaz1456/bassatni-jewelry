@@ -7,8 +7,8 @@ A complete, production-ready jewelry store built with **Node.js + Express + Mong
 ### Public Storefront
 - **Shop-first homepage**: the root URL `/` renders the catalog directly (with an elegant CSS/vanilla-JS entrance animation), so visitors land straight in the store
 - **Catalog & Search**: filterable catalog (type, metal, gemstone, price, occasion), typo-tolerant search with autocomplete
-- **Product Detail**: multi-image gallery, material/gemstone specs, measurements, care instructions, related products
-- **Cart & Wishlist**: client-side cart and wishlist pages (localStorage) with quantity editing, persistence across sessions, and demo checkout
+- **Product Detail**: multi-image gallery, material/gemstone specs (incl. gold purity up to 24k, now also **21k**), measurements, care instructions, related products
+- **Cart & Wishlist**: client-side cart and wishlist pages (localStorage) with quantity editing, persistence across sessions, and demo checkout; the wishlist is reachable from the header heart icon (with live count badge), the mobile menu, and footer links
 - **Static pages**: Contact (validated form + Google Maps embed), FAQ, **Ring Size Guide**
 - **Newsletter signup**, SEO (per-page meta, Open Graph, Twitter cards, JSON-LD Product schema, sitemap + robots.txt)
 - **CSRF protection**: lightweight session-token middleware applied to all public and admin state-changing forms (login, contact, newsletter, settings, product/category/media management, logout)
@@ -223,6 +223,8 @@ Run it locally against your Atlas URI, or as a Render One-off Job after the serv
 Public: `/` (shop — catalog rendered directly), `/shop` (alias), `/catalog`, `/catalog/new-arrivals`, `/catalog/best-sellers`, `/product/:slug`, `/category/:slug`, `/categories`, `/cart`, `/wishlist`, `/contact`, `/faq`, `/size-guide`, `/sitemap.xml`, `/robots.txt`, `/health`.
 
 The previous homepage, About, and Lookbook pages were removed with the nav simplification — the public pages no longer link to them. The files deleted are `views/index.ejs`, `views/about.ejs`, `views/lookbooks/`, and `src/controllers/lookbookController.js`.
+
+Latest refinements: the product-page **trust badges** ("Authenticity Guaranteed", "Free Insured Shipping", "30-Day Returns", "Lifetime Warranty") were removed (including their CSS; the announcement-bar default text no longer mentions "30-day returns"); the **breadcrumb components and their arrow/separator glyphs** were removed from all public pages (cleaner page headers; controllers no longer build breadcrumb data); and the admin product form now offers **21k** gold purity alongside the existing options (schema enum updated to match).
 
 API: `/api/products`, `/api/products/:slug`, `/api/products/search/autocomplete`, `/api/categories`, `/api/lookbooks` (see existing routes for query params).
 

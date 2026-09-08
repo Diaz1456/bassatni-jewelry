@@ -4,7 +4,7 @@
     <div class="container">
       <div class="announcement-bar" aria-live="polite">
         <% if (!settings || !settings.announcementBar || settings.announcementBar.enabled !== false) { %>
-          <span><%= settings && settings.announcementBar && settings.announcementBar.text ? settings.announcementBar.text : 'Free shipping on orders over $500 | Easy 30-day returns' %></span>
+          <span><%= settings && settings.announcementBar && settings.announcementBar.text ? settings.announcementBar.text : 'Complimentary shipping on all orders over $500' %></span>
         <% } %>
       </div>
     </div>
@@ -58,6 +58,13 @@
       </nav>
 
       <div class="header-right">
+        <a href="/wishlist" class="header-icon wishlist-icon" aria-label="Wishlist (0 items)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+          <span class="wishlist-count" aria-live="polite">0</span>
+        </a>
+
         <a href="/cart" class="header-icon cart-link" aria-label="Shopping cart (0 items)">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
             <circle cx="9" cy="21" r="1"/>

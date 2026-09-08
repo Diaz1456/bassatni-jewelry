@@ -292,45 +292,8 @@ h1, h2, h3, h4, h5, h6 {
 .page-header.category-header .page-title,
 .page-header.lookbook-header .page-title,
 .page-header.category-header .page-subtitle,
-.page-header.lookbook-header .page-subtitle,
-.page-header.category-header .breadcrumb a,
-.page-header.lookbook-header .breadcrumb a {
+.page-header.lookbook-header .page-subtitle {
   color: var(--color-surface);
-}
-
-.page-header.category-header .breadcrumb a:hover,
-.page-header.lookbook-header .breadcrumb a:hover {
-  color: var(--color-secondary-light);
-}
-
-.breadcrumb {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--spacing-xs);
-  font-size: 0.875rem;
-  color: var(--color-text-muted);
-  margin-bottom: var(--spacing-md);
-}
-
-.breadcrumb ol {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--spacing-xs);
-}
-
-.breadcrumb li:not(:last-child)::after {
-  content: '/';
-  margin-left: var(--spacing-xs);
-  color: var(--color-text-muted);
-}
-
-.breadcrumb a:hover {
-  color: var(--color-secondary);
-}
-
-.breadcrumb [aria-current="page"] {
-  color: var(--color-text);
-  font-weight: 500;
 }
 
 .page-title {

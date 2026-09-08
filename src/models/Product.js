@@ -66,7 +66,7 @@ const productSchema = new mongoose.Schema({
   },
   metalPurity: {
     type: String,
-    enum: ['9k', '10k', '14k', '18k', '22k', '24k', '925', '950', '999', 'N/A'],
+    enum: ['9k', '10k', '14k', '18k', '21k', '22k', '24k', '925', '950', '999', 'N/A'],
     default: 'N/A',
   },
   gemstones: [{

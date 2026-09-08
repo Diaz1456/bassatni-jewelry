@@ -3,7 +3,7 @@ const { toPublicUrl, destroyUploaded, removeUploadedFile } = require('../middlew
 
 const GEMSTONES = ['diamond', 'sapphire', 'ruby', 'emerald', 'pearl', 'opal', 'amethyst', 'topaz', 'aquamarine', 'garnet', 'peridot', 'citrine', 'tourmaline', 'tanzanite', 'moissanite', 'lab-diamond', 'none'];
 const METALS = ['gold', 'white-gold', 'rose-gold', 'silver', 'platinum', 'palladium', 'titanium', 'stainless-steel'];
-const PURITIES = ['9k', '10k', '14k', '18k', '22k', '24k', '925', '950', '999', 'N/A'];
+const PURITIES = ['9k', '10k', '14k', '18k', '21k', '22k', '24k', '925', '950', '999', 'N/A'];
 const OCCASIONS = ['engagement', 'wedding', 'anniversary', 'birthday', 'valentine', 'mothers-day', 'christmas', 'graduation', 'just-because', 'prom', 'formal', 'everyday'];
 
 // Money is stored as integer cents in MongoDB (avoids float rounding bugs),
