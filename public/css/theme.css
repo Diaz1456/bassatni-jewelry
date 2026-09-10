@@ -619,6 +619,7 @@ body::-webkit-scrollbar-thumb {
   border: 1px solid var(--color-border);
   border-radius: 14px;
   box-shadow: var(--shadow-lg);
+  padding: 18px;
 }
 .filter-header,
 .filter-header h2 {
@@ -713,7 +714,7 @@ body::-webkit-scrollbar-thumb {
   color: #191923;
 }
 .section-alt.related-products {
-  padding: 4.5rem 0;
+  padding: 3rem 0;
   margin-top: 0;
 }
 
@@ -770,7 +771,7 @@ body::-webkit-scrollbar-thumb {
 .featured-products,
 .featured-categories,
 .featured-lookbooks {
-  padding: 4.5rem 0;
+  padding: 3.25rem 0;
 }
 .section-header-with-link .section-link {
   color: var(--color-gold-light);
@@ -886,7 +887,7 @@ body::-webkit-scrollbar-thumb {
 
 /* ---------- Testimonials ---------- */
 .testimonials {
-  padding: 4.5rem 0;
+  padding: 3.25rem 0;
 }
 .testimonial-grid {
   display: grid;
@@ -951,7 +952,7 @@ body::-webkit-scrollbar-thumb {
 /* ---------- Cart & Wishlist pages ---------- */
 .cart-page,
 .wishlist-page {
-  padding: 3rem 0 4.5rem;
+  padding: 2.5rem 0 3.25rem;
   min-height: 55vh;
 }
 .cart-layout {
@@ -1092,7 +1093,7 @@ body::-webkit-scrollbar-thumb {
 
 /* ---------- Size guide page ---------- */
 .size-guide-page {
-  padding: 3rem 0 4.5rem;
+  padding: 2.5rem 0 3.25rem;
 }
 .size-guide-grid {
   display: grid;

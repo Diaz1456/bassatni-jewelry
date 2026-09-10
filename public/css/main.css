@@ -261,9 +261,10 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .page-header {
-  padding: var(--spacing-3xl) 0;
+  padding: var(--spacing-xl) 0 var(--spacing-md);
   background: var(--color-surface);
   border-bottom: 1px solid var(--color-border);
+  text-align: center;
 }
 
 .page-header.category-header,
@@ -297,15 +298,41 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .page-title {
-  font-size: clamp(2rem, 5vw, 3rem);
-  letter-spacing: -0.02em;
+  position: relative;
+  display: inline-block;
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  letter-spacing: 0.01em;
+  line-height: 1.15;
+}
+
+.page-title::after {
+  content: '';
+  display: block;
+  width: min(220px, 60%);
+  height: 1px;
+  margin: 14px auto 0;
+  background: linear-gradient(90deg, transparent, var(--color-secondary), transparent);
+  position: relative;
+}
+
+.page-title::before {
+  content: '◆';
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translate(-50%, 62%) scale(0.55);
+  color: var(--color-secondary);
+  background: var(--color-surface);
+  padding: 0 6px;
+  z-index: 1;
 }
 
 .page-subtitle {
-  font-size: 1.125rem;
+  font-size: 1.0625rem;
   color: var(--color-text-light);
-  margin-top: var(--spacing-sm);
+  margin-top: 10px;
   font-weight: 300;
+  letter-spacing: 0.02em;
 }
 
 @media (max-width: 768px) {
@@ -317,7 +344,7 @@ h1, h2, h3, h4, h5, h6 {
   }
   
   .page-header {
-    padding: var(--spacing-2xl) 0;
+    padding: var(--spacing-lg) 0 var(--spacing-sm);
   }
 }
 /* Form validation (client-side) */

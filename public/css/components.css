@@ -645,13 +645,13 @@
 
 /* ===== Product Cards ===== */
 .featured-products {
-  padding: 0 0 var(--spacing-4xl);
+  padding: 0 0 var(--spacing-2xl);
 }
 
 .product-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: var(--spacing-lg);
+  gap: clamp(16px, 2vw, 22px);
 }
 
 .product-card {
@@ -663,9 +663,26 @@
   transition: box-shadow var(--transition-base), transform var(--transition-base);
 }
 
+.product-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 12%;
+  right: 12%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--color-secondary), transparent);
+  opacity: 0;
+  transition: opacity var(--transition-base);
+  z-index: 3;
+}
+
 .product-card:hover {
   box-shadow: var(--shadow-lg);
   transform: translateY(-4px);
+}
+
+.product-card:hover::before {
+  opacity: 1;
 }
 
 .product-link {
@@ -677,6 +694,21 @@
   aspect-ratio: 4/5;
   overflow: hidden;
   background: var(--color-background);
+}
+
+.product-image-wrapper::after {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  opacity: 0;
+  transition: opacity var(--transition-base);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.product-card:hover .product-image-wrapper::after {
+  opacity: 1;
 }
 
 .product-image {
@@ -718,15 +750,15 @@
 }
 
 .product-info {
-  padding: var(--spacing-md);
+  padding: 14px 16px 18px;
 }
 
 .product-category {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   color: var(--color-text-muted);
-  margin-bottom: var(--spacing-xs);
+  margin-bottom: 4px;
 }
 
 .product-name {
@@ -734,8 +766,8 @@
   font-size: 0.9375rem;
   font-weight: 500;
   color: var(--color-text);
-  margin-bottom: var(--spacing-sm);
-  line-height: 1.4;
+  margin-bottom: 8px;
+  line-height: 1.35;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -744,14 +776,16 @@
 
 .product-price {
   display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
+  align-items: baseline;
+  gap: 8px;
 }
 
 .current-price {
-  font-size: 1rem;
+  font-family: var(--font-serif-accent);
+  font-size: 1.125rem;
   font-weight: 600;
   color: var(--color-secondary);
+  letter-spacing: 0.01em;
 }
 
 .original-price {
@@ -789,10 +823,10 @@
 
 .quick-add-btn {
   position: absolute;
-  bottom: var(--spacing-md);
-  right: var(--spacing-md);
-  width: 40px;
-  height: 40px;
+  bottom: var(--spacing-sm);
+  right: var(--spacing-sm);
+  width: 38px;
+  height: 38px;
   background: var(--color-primary);
   color: var(--color-surface);
   border-radius: 50%;
@@ -822,7 +856,7 @@
 
 /* ===== Lookbook Cards ===== */
 .featured-lookbooks {
-  padding: 0 0 var(--spacing-4xl);
+  padding: 0 0 var(--spacing-2xl);
 }
 
 .lookbook-grid {
@@ -1833,7 +1867,7 @@
 
 /* ===== Product Detail Page ===== */
 .product-detail-page {
-  padding: var(--spacing-lg) 0 var(--spacing-4xl);
+  padding: var(--spacing-lg) 0 var(--spacing-2xl);
 }
 
 .product-layout {
@@ -2495,20 +2529,20 @@
 
 /* ===== Catalog Page ===== */
 .catalog-page {
-  padding: var(--spacing-3xl) 0 var(--spacing-4xl);
+  padding: var(--spacing-xl) 0 var(--spacing-2xl);
 }
 
 .catalog-layout {
   display: grid;
   grid-template-columns: 260px 1fr;
-  gap: var(--spacing-2xl);
+  gap: var(--spacing-xl);
 }
 
 .catalog-sidebar {
   position: sticky;
-  top: calc(var(--header-height) + var(--spacing-lg));
+  top: calc(var(--header-height) + var(--spacing-md));
   align-self: start;
-  max-height: calc(100vh - var(--header-height) - var(--spacing-3xl));
+  max-height: calc(100vh - var(--header-height) - var(--spacing-2xl));
   overflow-y: auto;
 }
 
@@ -2516,7 +2550,7 @@
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--border-radius-lg);
-  padding: var(--spacing-lg);
+  padding: 18px;
   overflow-y: auto;
 }
 
@@ -2698,7 +2732,7 @@
   align-items: center;
   justify-content: center;
   gap: var(--spacing-sm);
-  margin-top: var(--spacing-2xl);
+  margin-top: var(--spacing-xl);
 }
 
 .page-numbers {
