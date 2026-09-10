@@ -1,4 +1,4 @@
-const { Admin, Product, Category } = require('../models');
+const { Admin, Product, Category, Settings } = require('../models');
 
 const getLogin = (req, res) => {
   if (req.session && req.session.adminId) {
@@ -63,6 +63,7 @@ const getDashboard = async (req, res, next) => {
       deletedProducts,
       lowStock,
       outOfStock,
+      settingsDoc,
     ] = await Promise.all([
       Product.countDocuments({ status: { $ne: 'deleted' } }),
       Category.countDocuments({}),
@@ -75,6 +76,7 @@ const getDashboard = async (req, res, next) => {
       // Low stock = active products with 0 < stock <= 5 (about to run out)
       Product.countDocuments({ status: 'active', stockQuantity: { $gt: 0, $lte: 5 } }),
       Product.countDocuments({ status: 'active', inStock: false }),
+      Settings.getSettings(),
     ]);
 
     res.render('admin/dashboard', {
@@ -89,6 +91,8 @@ const getDashboard = async (req, res, next) => {
         deleted: deletedProducts,
         lowStock,
         outOfStock,
+        visitors: settingsDoc?.visitorCount || 0,
+        dailyVisitors: settingsDoc?.dailyVisitors || 0,
       },
       recentProducts,
     });

@@ -265,9 +265,21 @@ productSchema.statics.buildFilter = function(query, options = {}) {
   const filter = { isActive: true };
   if (query) filter.$text = { $search: query };
   if (options.category) filter.category = options.category;
-  if (options.metalType) filter.metalType = options.metalType;
-  if (options.gemstone) filter['gemstones.type'] = options.gemstone;
-  if (options.occasion) filter.occasions = options.occasion;
+
+  // Handle array or single value for multi-select filters
+  if (options.metalType) {
+    const metals = Array.isArray(options.metalType) ? options.metalType : [options.metalType];
+    filter.metalType = metals.length === 1 ? metals[0] : { $in: metals };
+  }
+  if (options.gemstone) {
+    const gems = Array.isArray(options.gemstone) ? options.gemstone : [options.gemstone];
+    filter['gemstones.type'] = gems.length === 1 ? gems[0] : { $in: gems };
+  }
+  if (options.occasion) {
+    const occs = Array.isArray(options.occasion) ? options.occasion : [options.occasion];
+    filter.occasions = occs.length === 1 ? occs[0] : { $in: occs };
+  }
+
   if (options.isNew !== undefined) filter.isNew = options.isNew;
   if (options.isBestSeller !== undefined) filter.isBestSeller = options.isBestSeller;
   if (options.inStock !== undefined) filter.inStock = options.inStock;

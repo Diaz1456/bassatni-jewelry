@@ -74,6 +74,9 @@ const settingsSchema = new mongoose.Schema({
     defaultMetaDescription: { type: String, default: '' },
     defaultKeywords: { type: String, default: '' },
   },
+  visitorCount: { type: Number, default: 0 },
+  dailyVisitors: { type: Number, default: 0 },
+  dailyVisitorResetAt: { type: Date, default: null },
 }, {
   timestamps: true,
 });

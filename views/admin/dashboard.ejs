@@ -1,5 +1,15 @@
 <div class="admin-stats-grid">
   <div class="admin-stat-card">
+    <span class="admin-stat-label">Total Visitors</span>
+    <span class="admin-stat-value"><%= stats.visitors %></span>
+    <span class="admin-stat-sub">All-time unique visitors</span>
+  </div>
+  <div class="admin-stat-card">
+    <span class="admin-stat-label">Visitors Today</span>
+    <span class="admin-stat-value"><%= stats.dailyVisitors %></span>
+    <span class="admin-stat-sub">Unique visitors in last 24h</span>
+  </div>
+  <div class="admin-stat-card">
     <span class="admin-stat-label">Total Products</span>
     <span class="admin-stat-value"><%= stats.products %></span>
     <a class="admin-stat-link" href="/admin/products">View all →</a>

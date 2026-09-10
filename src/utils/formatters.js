@@ -18,6 +18,15 @@ const formatPriceFromCents = (cents, currency = 'USD', locale = 'en-US') => {
   }).format(cents / 100);
 };
 
+// Convert a cents value to a plain dollar number string for form inputs.
+// Whole dollars render without trailing decimals (e.g. 890000 → "8900"),
+// fractional prices keep their cents (e.g. 49999 → "499.99").
+const centsToDollars = (cents) => {
+  if (cents === null || cents === undefined || Number.isNaN(Number(cents))) return '';
+  const dollars = Number(cents) / 100;
+  return Number.isInteger(dollars) ? String(dollars) : dollars.toFixed(2);
+};
+
 const formatNumber = (num, locale = 'en-US') => {
   if (num === null || num === undefined) return '';
   return new Intl.NumberFormat(locale).format(num);
@@ -129,6 +138,7 @@ const getOccasionLabel = (occasion) => {
 module.exports = {
   formatPrice,
   formatPriceFromCents,
+  centsToDollars,
   formatNumber,
   formatDate,
   truncate,

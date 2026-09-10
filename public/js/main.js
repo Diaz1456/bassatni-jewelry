@@ -533,7 +533,6 @@
 
   /* ===== Cart (localStorage) ===== */
   const addToCartBtn = document.querySelector('.add-to-cart-btn');
-  const quickAddBtns = document.querySelectorAll('.quick-add-btn');
   const cartCount = document.querySelector('.cart-count');
 
   const CART_KEY = 'cart';
@@ -554,27 +553,28 @@
     });
   }
 
-  quickAddBtns.forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      const slug = btn.dataset.productSlug;
-      fetch(`/api/products/${slug}`)
-        .then(res => res.json())
-        .then(data => {
-          if (data.success) {
-            const p = data.data.product;
-            addToCart({
-              productSlug: p.slug,
-              productName: p.name,
-              productPrice: p.price,
-              productImage: (p.mainImage && p.mainImage.url) || '/images/placeholder.svg',
-              productUrl: '/product/' + p.slug,
-            }, 1);
-          }
-        })
-        .catch(err => console.error('Error adding to cart:', err));
-    });
+  // Delegated quick-add handler (works for both initial and AJAX-rendered cards)
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.quick-add-btn');
+    if (!btn) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const slug = btn.dataset.productSlug;
+    fetch(`/api/products/${slug}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          const p = data.data.product;
+          addToCart({
+            productSlug: p.slug,
+            productName: p.name,
+            productPrice: p.price,
+            productImage: (p.mainImage && p.mainImage.url) || '/images/placeholder.svg',
+            productUrl: '/product/' + p.slug,
+          }, 1);
+        }
+      })
+      .catch(err => console.error('Error adding to cart:', err));
   });
 
   function addToCart(data, quantity) {
@@ -656,13 +656,14 @@
     });
   }
 
-  document.querySelectorAll('.wishlist-btn, .card-wish-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      toggleWishlist(btn.dataset);
-      syncWishlistButtons();
-    });
+  // Delegated handler so wishlist buttons work even after AJAX re-renders the grid
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.wishlist-btn, .card-wish-btn');
+    if (!btn) return;
+    e.preventDefault();
+    e.stopPropagation();
+    toggleWishlist(btn.dataset);
+    syncWishlistButtons();
   });
 
   syncWishlistButtons();
@@ -833,8 +834,15 @@
     });
   }
 
-  /* ===== Filter Interactions ===== */
+  /* ===== Filter Interactions (dynamic – no page reload) ===== */
+  const filterForm = document.querySelector('#filter-form');
+  const productGrid = document.querySelector('#product-grid');
   const clearFiltersBtn = document.querySelector('.clear-filters-btn');
+  const filterResultInfo = document.querySelector('.results-info');
+  const filterPagination = document.querySelector('.pagination');
+  const activeFilterCountEl = document.querySelector('#active-filter-count');
+  let filterDebounce;
+
   if (clearFiltersBtn) {
     clearFiltersBtn.addEventListener('click', (e) => {
       e.preventDefault();
@@ -842,6 +850,7 @@
     });
   }
 
+  /* Mobile filter sidebar */
   const openFiltersBtn = document.querySelector('#open-filters-btn');
   const catalogSidebar = document.querySelector('.catalog-sidebar');
   if (openFiltersBtn && catalogSidebar) {
@@ -858,8 +867,8 @@
     });
   }
 
+  /* Grid / list view toggle */
   const viewBtns = document.querySelectorAll('.view-btn');
-  const productGrid = document.querySelector('#product-grid');
   if (viewBtns.length > 0 && productGrid) {
     viewBtns.forEach(btn => {
       btn.addEventListener('click', () => {
@@ -877,13 +886,222 @@
     });
   }
 
-  /* ===== Sort Select Change ===== */
+  /* Build a query string from all filter form inputs.
+     Price inputs are in DOLLARS on screen – multiply by 100 before sending. */
+  function buildFilterQuery(overrides) {
+    if (!filterForm) return '';
+    const params = new URLSearchParams();
+    const fd = new FormData(filterForm);
+
+    // Collect multi-value fields
+    const metals = [];
+    const gems = [];
+    const occasions = [];
+
+    for (const [key, val] of fd.entries()) {
+      if (key === 'metalType') metals.push(val);
+      else if (key === 'gemstone') gems.push(val);
+      else if (key === 'occasion') occasions.push(val);
+      else if (key === 'minPrice' || key === 'maxPrice') {
+        // Convert dollars → cents
+        const cents = Math.round(parseFloat(val) * 100);
+        if (!isNaN(cents) && cents > 0) params.set(key, String(cents));
+      }
+      else if (val) params.set(key, val);
+    }
+
+    metals.forEach(m => params.append('metalType', m));
+    gems.forEach(g => params.append('gemstone', g));
+    occasions.forEach(o => params.append('occasion', o));
+
+    // Apply overrides (sort, page)
+    if (overrides) {
+      Object.entries(overrides).forEach(([k, v]) => {
+        if (v === '' || v === undefined || v === null) params.delete(k);
+        else params.set(k, v);
+      });
+    }
+
+    const qs = params.toString();
+    // Update URL without reload
+    const newUrl = window.location.pathname + (qs ? '?' + qs : '');
+    history.replaceState(null, '', newUrl);
+    return qs;
+  }
+
+  /* Fetch and render filtered products */
+  async function fetchFilteredProducts(overrides) {
+    const qs = buildFilterQuery(overrides);
+    const baseUrl = filterForm ? filterForm.getAttribute('action') : window.location.pathname;
+    try {
+      const resp = await fetch(baseUrl + '?' + qs, {
+        headers: { 'Accept': 'application/json' },
+      });
+      if (!resp.ok) throw new Error('Network response was not ok');
+      const data = await resp.json();
+      renderFilteredResults(data);
+    } catch (err) {
+      console.error('Filter fetch error:', err);
+    }
+  }
+
+  function renderFilteredResults(data) {
+    if (!productGrid) return;
+    const products = data.products || [];
+
+    if (products.length === 0) {
+      productGrid.innerHTML = `
+        <div class="no-results">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/><line x1="12" y1="8" x2="12" y2="12"/></svg>
+          <h3>No products found</h3>
+          <p>Try adjusting your filters or search terms</p>
+        </div>`;
+    } else {
+      productGrid.innerHTML = products.map(p => renderProductCard(p)).join('');
+      syncWishlistButtons();
+    }
+
+    if (filterResultInfo) {
+      filterResultInfo.innerHTML = `<span>${products.length} of ${data.pagination?.total || products.length} products</span>`;
+    }
+
+    // Render pagination
+    if (filterPagination && data.pagination && data.pagination.totalPages > 1) {
+      const pag = data.pagination;
+      let html = '';
+      if (pag.hasPrev) {
+        html += `<button class="page-btn" data-page="${pag.page - 1}" aria-label="Previous page">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>`;
+      }
+      const start = Math.max(1, pag.page - 2);
+      const end = Math.min(pag.totalPages, pag.page + 2);
+      html += '<div class="page-numbers">';
+      for (let i = start; i <= end; i++) {
+        html += `<button class="page-btn ${i === pag.page ? 'active' : ''}" data-page="${i}" aria-label="Page ${i}" ${i === pag.page ? 'aria-current="page"' : ''}>${i}</button>`;
+      }
+      html += '</div>';
+      if (pag.hasNext) {
+        html += `<button class="page-btn" data-page="${pag.page + 1}" aria-label="Next page">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>`;
+      }
+      filterPagination.innerHTML = html;
+    } else if (filterPagination) {
+      filterPagination.innerHTML = '';
+    }
+
+    // Update active filter count badge
+    if (activeFilterCountEl) {
+      const params = new URLSearchParams(window.location.search);
+      let count = 0;
+      if (params.get('category')) count++;
+      if (params.getAll('metalType').length) count++;
+      if (params.getAll('gemstone').length) count++;
+      if (params.getAll('occasion').length) count++;
+      if (params.get('minPrice')) count++;
+      if (params.get('maxPrice')) count++;
+      if (params.get('isNew')) count++;
+      if (params.get('isBestSeller')) count++;
+      if (params.get('q')) count++;
+      activeFilterCountEl.textContent = count;
+    }
+  }
+
+  /* Render a single product card (matches product-card.ejs markup) */
+  function renderProductCard(p) {
+    const img = (p.mainImage && p.mainImage.url) || '/images/placeholder.svg';
+    const alt = (p.mainImage && p.mainImage.alt) || p.name;
+    const price = formatMoney(p.price);
+    const compareAt = p.compareAtPrice && p.compareAtPrice > p.price ? formatMoney(p.compareAtPrice) : '';
+    const discount = p.discountPercent || 0;
+
+    return `
+      <article class="product-card" role="listitem" data-product-id="${p._id}">
+        <button type="button" class="card-wish-btn"
+                data-product-slug="${escapeHtml(p.slug)}"
+                data-product-name="${escapeHtml(p.name)}"
+                data-product-price="${p.price}"
+                data-product-image="${escapeHtml(img)}"
+                data-product-url="/product/${escapeHtml(p.slug)}"
+                aria-label="Toggle wishlist for ${escapeHtml(p.name)}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+        </button>
+        <a href="/product/${escapeHtml(p.slug)}" class="product-link" aria-label="${escapeHtml(p.name)} - ${price}">
+          <div class="product-image-wrapper">
+            <img src="${escapeHtml(img)}" alt="${escapeHtml(alt)}" loading="lazy" width="400" height="500" class="product-image">
+            ${p.isNew ? '<span class="product-badge badge-new" aria-label="New arrival">New</span>' : ''}
+            ${!p.isNew && p.isBestSeller ? '<span class="product-badge badge-bestseller" aria-label="Best seller">Bestseller</span>' : ''}
+            ${compareAt ? `<span class="product-badge badge-sale" aria-label="${discount}% off">-${discount}%</span>` : ''}
+          </div>
+          <div class="product-info">
+            <p class="product-category">${escapeHtml(p.category?.name || 'Jewelry')}</p>
+            <h3 class="product-name">${escapeHtml(p.name)}</h3>
+            <div class="product-price">
+              <span class="current-price">${price}</span>
+              ${compareAt ? `<span class="original-price">${compareAt}</span>` : ''}
+            </div>
+          </div>
+        </a>
+        <button class="quick-add-btn" aria-label="Quick add ${escapeHtml(p.name)} to cart" data-product-slug="${escapeHtml(p.slug)}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+        </button>
+      </article>`;
+  }
+
+  /* --- Attach live-change listeners to all filter inputs --- */
+  if (filterForm) {
+    // Prevent default form submit (full page reload)
+    filterForm.addEventListener('submit', (e) => e.preventDefault());
+
+    // Checkboxes & radios → update on change
+    filterForm.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach(input => {
+      input.addEventListener('change', () => {
+        clearTimeout(filterDebounce);
+        filterDebounce = setTimeout(() => fetchFilteredProducts({ page: 1 }), 50);
+      });
+    });
+
+    // Price inputs → debounced update (user types in dollars)
+    const minPriceInput = filterForm.querySelector('#min-price');
+    const maxPriceInput = filterForm.querySelector('#max-price');
+    [minPriceInput, maxPriceInput].forEach(input => {
+      if (!input) return;
+      input.addEventListener('input', () => {
+        clearTimeout(filterDebounce);
+        filterDebounce = setTimeout(() => fetchFilteredProducts({ page: 1 }), 400);
+      });
+    });
+  }
+
+  // Sort select → dynamic
   const sortSelect = document.querySelector('#sort-select');
   if (sortSelect) {
     sortSelect.addEventListener('change', () => {
-      const url = new URL(window.location.href);
-      url.searchParams.set('sort', sortSelect.value);
-      window.location.href = url.toString();
+      fetchFilteredProducts({ sort: sortSelect.value, page: 1 });
+    });
+  }
+
+  // Pagination clicks (delegated – handles server-rendered <a> links and
+  // AJAX-rendered <button>s)
+  if (filterPagination) {
+    filterPagination.addEventListener('click', (e) => {
+      const btn = e.target.closest('.page-btn, .pagination a, .page-numbers a, [data-page]');
+      if (!btn) return;
+      e.preventDefault();
+      let page = btn.dataset ? btn.dataset.page : null;
+      if (!page) {
+        const href = btn.getAttribute && btn.getAttribute('href');
+        if (href) page = new URL(href, window.location.origin).searchParams.get('page');
+      }
+      if (page) {
+        fetchFilteredProducts({ page });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     });
   }
 

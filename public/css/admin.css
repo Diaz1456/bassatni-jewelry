@@ -132,6 +132,7 @@ a { color: var(--admin-gold-deep); }
 .admin-stat-label { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--admin-muted); }
 .admin-stat-value { font-size: 30px; font-weight: 700; font-family: 'Playfair Display', serif; }
 .admin-stat-link { font-size: 13px; color: var(--admin-gold-deep); text-decoration: none; }
+.admin-stat-sub { font-size: 12px; color: var(--admin-muted); }
 .admin-quick-links { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 26px; }
 
 /* Panel & table */

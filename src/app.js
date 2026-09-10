@@ -9,6 +9,7 @@ const morgan = require('morgan');
 const { connectDB } = require('./utils/db');
 const { webRoutes, apiRoutes, adminRoutes } = require('./routes');
 const { securityHeaders, webLimiter, apiLimiter, errorHandler, csrfTokenLocals } = require('./middleware');
+const visitorTracker = require('./middleware/visitorTracker');
 const { getCachedSettings } = require('./utils/settingsCache');
 const config = require('./config');
 
@@ -109,6 +110,7 @@ app.use(async (req, res, next) => {
 const formatters = require('./utils/formatters');
 app.locals.formatPrice = formatters.formatPrice;
 app.locals.formatPriceFromCents = formatters.formatPriceFromCents;
+app.locals.centsToDollars = formatters.centsToDollars;
 app.locals.formatNumber = formatters.formatNumber;
 app.locals.formatDate = formatters.formatDate;
 app.locals.truncate = formatters.truncate;
@@ -134,6 +136,9 @@ app.use(async (req, res, next) => {
   }
   next();
 });
+
+// Lightweight visitor counter (mounts on all web pages; skips api/admin/static)
+app.use(visitorTracker);
 
 app.use('/api', apiRoutes);
 app.use('/admin', adminRoutes);
